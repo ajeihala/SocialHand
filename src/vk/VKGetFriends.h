@@ -2,16 +2,20 @@
 #define VKGETFRIENDS_H
 
 #include <QObject>
+#include "engine/GetFriendsRequest.h"
 
 class QNetworkAccessManager;
 class QNetworkReply;
 
-class VKGetFriends : public QObject
+class VKGetFriends : public GetFriendsRequest
 {
     Q_OBJECT
 public:
-    explicit VKGetFriends(QString userId, QObject *parent = 0);
+    explicit VKGetFriends(QObject *parent = 0);
     
+public: // GetFriendsRequest
+    virtual void doStartRequest(QString userId);
+
 signals:
     
 public slots:
@@ -21,6 +25,8 @@ private slots:
 
 private:
     static QNetworkAccessManager* getNetworkAccessManager();
+
+    QNetworkReply* m_reply;
 };
 
 #endif // VKGETFRIENDS_H

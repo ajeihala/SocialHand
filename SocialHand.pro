@@ -48,7 +48,9 @@ HEADERS += \
     src/vk/VKGetFriends.h \
     src/engine/Engine.h \
     src/engine/AuthManager.h \
-    src/engine/SocialRequest.h
+    src/engine/GetFriendsRequest.h \
+    src/engine/SocialRequestFactory.h \
+    src/vk/VkSocialRequestFactory.h
 
 SOURCES += \
     src/main.cpp \
@@ -57,7 +59,8 @@ SOURCES += \
     src/utils/QmlRegisterTypes.cpp \
     src/utils/Settings.cpp \
     src/vk/VKGetFriends.cpp \
-    src/engine/Engine.cpp
+    src/engine/Engine.cpp \
+    src/vk/VkSocialRequestFactory.cpp
 
 OTHER_FILES += \
     qml/main.qml \

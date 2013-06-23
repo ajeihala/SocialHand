@@ -5,6 +5,7 @@
 #include "utils/PathUtils.h"
 #include "utils/QmlRegisterTypes.h"
 #include "vk/VKAuth.h"
+#include "vk/VkSocialRequestFactory.h"
 
 #include "engine/Engine.h"
 
@@ -21,8 +22,11 @@ int main(int argc, char *argv[])
     QQmlEngine qmlEngine;
     QQmlComponent component(&qmlEngine);
 
+    QObject::connect(&qmlEngine, SIGNAL(quit()), QCoreApplication::instance(), SLOT(quit()));
+
     VKAuth vkAuth;
-    Engine engine(&vkAuth, nullptr);
+    VkSocialRequestFactory vkSocialRequestFactory;
+    Engine engine(&vkAuth, &vkSocialRequestFactory);
 
     QQmlContext* context = qmlEngine.rootContext();
     context->setContextProperty("vkAuth", &vkAuth);
@@ -40,7 +44,6 @@ int main(int argc, char *argv[])
         qWarning("Error: Your root item has to be a Window.");
         return -1;
     }
-
 
     window->show();
     return app.exec();
