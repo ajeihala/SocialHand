@@ -1,7 +1,13 @@
 # Add more folders to ship with the application, here
-folder_01.source = qml/SocialHand
-folder_01.target = qml
+folder_01.source = resources/qml
+folder_01.target = .
 DEPLOYMENTFOLDERS = folder_01
+
+QMAKE_CXXFLAGS += -std=c++11
+
+myFiles.sources = resources/qml
+myFiles.path = .
+DEPLOYMENT += myFiles
 
 # Additional import path used to resolve QML modules in Creator's code model
 QML_IMPORT_PATH =
@@ -15,32 +21,48 @@ DESTDIR = bin
 OBJECTS_DIR = build
 MOC_DIR = build
 
+QT += widgets qml quick webkitwidgets network
+
 INCLUDEPATH += src \
-        src/libs/vreen \
-        src/libs/vreen/src
 
 VPATH += \
     src \
     src/libs \
-    src/libs/vreen
 
 DEPENDPATH += \
     src \
     src/libs
     src/utils
 
-include(src/libs/vreen/vreen.pri)
-
 # Installation path
 # target.path =
 
-# Please do not modify the following two lines. Required for deployment.
 include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
 HEADERS += \
-    src/utils/PathUtils.h
+    src/utils/PathUtils.h \
+    src/vk/VKAuth.h \
+    src/utils/QmlRegisterTypes.h \
+    src/utils/Settings.h \
+    src/vk/VKGetFriends.h \
+    src/engine/Engine.h \
+    src/engine/AuthManager.h \
+    src/engine/SocialRequest.h
 
 SOURCES += \
     src/main.cpp \
-    src/utils/PathUtils.cpp
+    src/utils/PathUtils.cpp \
+    src/vk/VKAuth.cpp \
+    src/utils/QmlRegisterTypes.cpp \
+    src/utils/Settings.cpp \
+    src/vk/VKGetFriends.cpp \
+    src/engine/Engine.cpp
+
+OTHER_FILES += \
+    qml/main.qml \
+    resources/qml/vk/VKAuthItem.qml
+
+
+#RESOURCES += \
+#    resources.qrc
