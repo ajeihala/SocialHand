@@ -21,7 +21,7 @@ DESTDIR = bin
 OBJECTS_DIR = build
 MOC_DIR = build
 
-QT += widgets qml quick webkitwidgets network
+QT += widgets qml quick webkitwidgets network sql
 
 INCLUDEPATH += src \
 
@@ -50,7 +50,9 @@ HEADERS += \
     src/engine/AuthManager.h \
     src/engine/GetFriendsRequest.h \
     src/engine/SocialRequestFactory.h \
-    src/vk/VkSocialRequestFactory.h
+    src/vk/VkSocialRequestFactory.h \
+    src/engine/FriendsStorage.h \
+    src/db/FriendsDb.h
 
 SOURCES += \
     src/main.cpp \
@@ -60,7 +62,8 @@ SOURCES += \
     src/utils/Settings.cpp \
     src/vk/VKGetFriends.cpp \
     src/engine/Engine.cpp \
-    src/vk/VkSocialRequestFactory.cpp
+    src/vk/VkSocialRequestFactory.cpp \
+    src/db/FriendsDb.cpp
 
 OTHER_FILES += \
     qml/main.qml \

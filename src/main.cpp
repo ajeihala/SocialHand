@@ -7,6 +7,8 @@
 #include "vk/VKAuth.h"
 #include "vk/VkSocialRequestFactory.h"
 
+#include "db/FriendsDb.h"
+
 #include "engine/Engine.h"
 
 int main(int argc, char *argv[])
@@ -26,7 +28,10 @@ int main(int argc, char *argv[])
 
     VKAuth vkAuth;
     VkSocialRequestFactory vkSocialRequestFactory;
-    Engine engine(&vkAuth, &vkSocialRequestFactory);
+
+    FriendsDb db;
+
+    Engine engine(&vkAuth, &vkSocialRequestFactory, &db);
 
     QQmlContext* context = qmlEngine.rootContext();
     context->setContextProperty("vkAuth", &vkAuth);
