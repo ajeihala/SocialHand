@@ -52,7 +52,8 @@ HEADERS += \
     src/engine/SocialRequestFactory.h \
     src/vk/VkSocialRequestFactory.h \
     src/engine/FriendsStorage.h \
-    src/db/FriendsDb.h
+    src/db/FriendsDb.h \
+    src/engine/RequestsQueue.h
 
 SOURCES += \
     src/main.cpp \
@@ -63,7 +64,8 @@ SOURCES += \
     src/vk/VKGetFriends.cpp \
     src/engine/Engine.cpp \
     src/vk/VkSocialRequestFactory.cpp \
-    src/db/FriendsDb.cpp
+    src/db/FriendsDb.cpp \
+    src/engine/RequestsQueue.cpp
 
 OTHER_FILES += \
     qml/main.qml \

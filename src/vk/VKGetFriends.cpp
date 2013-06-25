@@ -32,11 +32,13 @@ void VKGetFriends::doStartRequest(QString userId)
 
 void VKGetFriends::onFinished(QNetworkReply* reply)
 {
+    QByteArray bytes = reply->readAll();
+    QString result(bytes);
+
+//    qDebug() << "VK response: " << result;
+
     if (reply->error() == QNetworkReply::NoError)
     {
-        QByteArray bytes = reply->readAll();
-        QString result(bytes);
-
         QJsonDocument json = QJsonDocument::fromJson(bytes);
 
         QJsonObject obj = json.object();
@@ -51,6 +53,8 @@ void VKGetFriends::onFinished(QNetworkReply* reply)
         }
 
         emit friendsRequestFinished(this, getUserId(), list);
+    } else {
+        qDebug() << "Some error on VK request: " << result;
     }
 
     reply->deleteLater();

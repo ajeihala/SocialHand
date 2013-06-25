@@ -7,19 +7,17 @@
 
 #include <QDebug>
 
-Engine::Engine(AuthManager* auth, SocialRequestFactory* socialRequest, FriendsStorage* storage, QObject* parent) :
-    QObject(parent),
-    _authManager(auth),
-    _socialRequest(socialRequest),
-    _storage(storage)
+Engine::Engine(AuthManager* auth, SocialRequestFactory* socialRequestFactory, FriendsStorage* storage, QObject* parent)
+    : QObject(parent)
+    , _authManager(auth)
+    , _socialRequestFactory(socialRequestFactory)
+    , _storage(storage)
+    , _requestsQueue(*this, *socialRequestFactory)
 {
 }
 
-Engine::Engine(QObject* parent) :
-    QObject(parent),
-    _authManager(nullptr),
-    _socialRequest(nullptr),
-    _storage(nullptr)
+Engine::Engine(QObject* parent)
+    : Engine(nullptr, nullptr, nullptr, parent)
 {
 }
 
@@ -27,19 +25,24 @@ void Engine::start()
 {
     QString initialUserId = _authManager->getOriginatorUserId();
 
-    GetFriendsRequest* friendsRequest = _socialRequest->createGetFriendsRequest();
-    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,QString,QStringList)),
-            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,QString,QStringList)));
+    _storage->storeFriends(QStringList() << initialUserId, "", 0);
 
-    friendsRequest->startRequest(initialUserId);
+    startRequests(QStringList() << initialUserId, 1);
 }
 
-void Engine::onGetFriendsRequestFinished(GetFriendsRequest* request, QString userId, QStringList friendsList)
+void Engine::startRequests(QStringList userIdList, int level)
 {
-    qDebug() << "List for user id: " << userId << " : " << friendsList;
-    request->deleteLater();
-
-    _storage->storeFriends(friendsList, userId, 1);
+    _requestsQueue.startRequests(userIdList, level);
 }
 
+void Engine::requestFinished(QString parentId, QStringList friendsList, int level)
+{
+    qDebug() << "List for user id: " << parentId << " : " << friendsList;
 
+    _storage->storeFriends(friendsList, parentId, level);
+
+    ++level;
+    if (level < 3) {
+        startRequests(friendsList, level);
+    }
+}
