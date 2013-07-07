@@ -33,7 +33,7 @@ ApplicationWindow {
         Row {
             TextField {
                 id: targetUserFieldId
-                text: "9301933"
+                text: "101908810"
                 width: 200
             }
 

@@ -37,7 +37,7 @@ void Engine::start(QString target)
     User targetUser(targetUserId, 0, 0, User::UserSide::kTargetFriend);
     storage->storeUser(targetUser);
 
-    processSearchIteration(UserList() << initialUser);
+    processSearchIteration(UserList() << initialUser << targetUser);
 }
 
 void Engine::startRequests(UserList usersList)
