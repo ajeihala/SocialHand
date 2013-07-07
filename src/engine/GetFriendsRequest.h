@@ -27,7 +27,7 @@ public:
     }
 
 signals:
-    void friendsRequestFinished(GetFriendsRequest* request, User user);
+    void friendsRequestFinished(GetFriendsRequest* request, QList<UserData> users);
     void friendsRequestFailed(GetFriendsRequest* request, UserData userData);
 
 public:

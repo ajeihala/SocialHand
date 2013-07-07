@@ -12,7 +12,7 @@ public:
     explicit DefaultSearchStrategy(QObject *parent = 0);
     
 public: // SearchStrategy
-    virtual void onFriendsReceived(const User& user);
+    virtual void onFriendsReceived(QList<UserData> users);
     virtual QList<UserData> getListOfUsersToFetchTheirFriends();
 
 

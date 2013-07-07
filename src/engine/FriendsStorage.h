@@ -14,8 +14,8 @@ public:
 
     virtual void clearAll() = 0;
 
-    virtual void storeInitialUser(const UserData& userData) = 0;
-    virtual void storeFriends(const User& user) = 0;
+    virtual void storeUser(const UserData& userData) = 0;
+    virtual void storeUsers(QList<UserData> users) = 0;
     virtual QList<UserData> findMutualFriends() = 0;
     virtual QList<UserData> getUserFullChain(int mutualUserId) = 0;
 };

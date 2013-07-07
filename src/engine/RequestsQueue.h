@@ -20,7 +20,7 @@ public:
     public:
         virtual ~Listener() { }
 
-        virtual void requestFinished(const User& user) = 0;
+        virtual void requestFinished(QList<UserData> users) = 0;
     };
 
 public:
@@ -38,7 +38,7 @@ private:
     bool hasOutgoingRequest();
 
 private slots:
-    void onGetFriendsRequestFinished(GetFriendsRequest* request, User user);
+    void onGetFriendsRequestFinished(GetFriendsRequest* request, QList<UserData> users);
     void onGetFriendsRequestFailed(GetFriendsRequest* request, UserData userData);
     void onScheduleTimer();
 

@@ -38,8 +38,8 @@ void RequestsQueue::cancellAll()
 void RequestsQueue::startRequest(const UserData& userData)
 {
     GetFriendsRequest* friendsRequest = socialRequestFactory.createGetFriendsRequest();
-    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,User)),
-            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,User)));
+    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,QList<UserData>)),
+            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,QList<UserData>)));
     connect(friendsRequest, SIGNAL(friendsRequestFailed(GetFriendsRequest*,UserData)),
             this, SLOT(onGetFriendsRequestFailed(GetFriendsRequest*,UserData)));
 
@@ -61,12 +61,12 @@ bool RequestsQueue::hasOutgoingRequest()
     return outgoingRequest != nullptr;
 }
 
-void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, User user)
+void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, QList<UserData> users)
 {
     request->deleteLater();
     outgoingRequest = nullptr;
 
-    listener.requestFinished(user);
+    listener.requestFinished(users);
     schedule();
 }
 

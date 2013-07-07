@@ -5,15 +5,9 @@ DefaultSearchStrategy::DefaultSearchStrategy(QObject *parent) :
 {
 }
 
-void DefaultSearchStrategy::onFriendsReceived(const User& user)
+void DefaultSearchStrategy::onFriendsReceived(QList<UserData> users)
 {
-    if (!user.getFriends().isEmpty()) {
-        users = user.getFriends();
-    } else {
-        if (user.getUserData().getLevel() == 0) {
-            users = QList<UserData>() << user.getUserData();
-        }
-    }
+    this->users = users;
 }
 
 QList<UserData> DefaultSearchStrategy::getListOfUsersToFetchTheirFriends()

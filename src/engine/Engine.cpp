@@ -32,12 +32,12 @@ void Engine::start(QString target)
     targetUserId = target.toInt();
 
     UserData initialUser(initialUserId, 0, 0, UserData::UserSide::kMyFriend);
-    storage->storeInitialUser(initialUser);
+    storage->storeUser(initialUser);
 
     UserData targetUser(targetUserId, 0, 0, UserData::UserSide::kTargetFriend);
-    storage->storeInitialUser(targetUser);
+    storage->storeUser(targetUser);
 
-    processSearchIteration(initialUser);
+    processSearchIteration(QList<UserData>() << initialUser);
 }
 
 void Engine::startRequests(QList<UserData> usersList)
@@ -45,16 +45,16 @@ void Engine::startRequests(QList<UserData> usersList)
     requestsQueue.startRequests(usersList);
 }
 
-void Engine::processSearchIteration(const User& user)
+void Engine::processSearchIteration(QList<UserData> users)
 {
     QList<UserData> mutialFriends = storage->findMutualFriends();
 
     if (mutialFriends.isEmpty()) {
-        searchStrategy->onFriendsReceived(user);
+        searchStrategy->onFriendsReceived(users);
 
         QList<UserData> listToFetch = searchStrategy->getListOfUsersToFetchTheirFriends();
 
-        if (user.getUserData().getLevel() < 2) {
+        if (!users.isEmpty() && users.at(0).getLevel() < 2) {
             startRequests(listToFetch);
         }
     } else {
@@ -64,8 +64,8 @@ void Engine::processSearchIteration(const User& user)
     }
 }
 
-void Engine::requestFinished(const User& user)
+void Engine::requestFinished(QList<UserData> users)
 {
-    storage->storeFriends(user);
-    processSearchIteration(user);
+    storage->storeUsers(users);
+    processSearchIteration(users);
 }

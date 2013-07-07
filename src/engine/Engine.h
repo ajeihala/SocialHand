@@ -25,11 +25,11 @@ public slots:
     void start(QString target);
     
 private: // RequestsQueue::Listener
-    virtual void requestFinished(const User& user);
+    virtual void requestFinished(QList<UserData> users);
 
 private:
     void startRequests(QList<UserData> usersList);
-    void processSearchIteration(const User& user);
+    void processSearchIteration(QList<UserData> users);
 
 private:
     AuthManager* authManager;

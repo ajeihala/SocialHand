@@ -17,12 +17,14 @@ public:
 public: // FrindsStorage
     virtual void clearAll();
 
-    virtual void storeInitialUser(const UserData& userData);
-    virtual void storeFriends(const User& user);
+    virtual void storeUser(const UserData& userData);
+    virtual void storeUsers(QList<UserData> users);
     virtual QList<UserData> findMutualFriends();
     virtual QList<UserData> getUserFullChain(int mutualUserId);
 
 private:
+    virtual void storeUsers(QList<UserData> users, UserData::UserSide userSide);
+
     QString getTableForUserSide(UserData::UserSide userSide);
     bool getUserData(int userId, UserData& userData);
     bool getUserData(int userId, UserData::UserSide userSide, UserData& userData);

@@ -82,7 +82,7 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
             }
         }
 
-        emit friendsRequestFinished(this, User(getUserData(), friendsList));
+        emit friendsRequestFinished(this, friendsList);
     } else {
         qDebug() << "Some error on VK request for userId " << getUserData().getUserId();
         emit friendsRequestFailed(this, getUserData());

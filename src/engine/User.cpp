@@ -94,31 +94,31 @@ void UserData::setCountry(const QString& value)
 }
 
 
-User::User(const UserData& userData, QList<UserData> friends)
-    : userData(userData)
-    , friends(friends)
-{
-}
+//User::User(const UserData& userData, QList<UserData> friends)
+//    : userData(userData)
+//    , friends(friends)
+//{
+//}
 
-UserData User::getUserData() const
-{
-    return userData;
-}
+//UserData User::getUserData() const
+//{
+//    return userData;
+//}
 
-void User::setUserData(const UserData& value)
-{
-    userData = value;
-}
+//void User::setUserData(const UserData& value)
+//{
+//    userData = value;
+//}
 
-QList<UserData> User::getFriends() const
-{
-    return friends;
-}
+//QList<UserData> User::getFriends() const
+//{
+//    return friends;
+//}
 
-void User::setFriends(const QList<UserData>& value)
-{
-    this->friends = value;
-}
+//void User::setFriends(const QList<UserData>& value)
+//{
+//    this->friends = value;
+//}
 
 QDebug operator <<(QDebug d, const UserData& userData)
 {

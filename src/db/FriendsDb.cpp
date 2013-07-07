@@ -104,22 +104,49 @@ void FriendsDb::clearAll()
     initDb();
 }
 
-void FriendsDb::storeInitialUser(const UserData& userData)
+void FriendsDb::storeUser(const UserData& userData)
 {
-    User user(userData, QList<UserData>() << userData);
-    storeFriends(user);
+    storeUsers(QList<UserData>() << userData);
 }
 
-void FriendsDb::storeFriends(const User& user)
+void FriendsDb::storeUsers(QList<UserData> users)
 {
+    QList<UserData> myFriends;
+    myFriends.reserve(users.count());
+
+    QList<UserData> targetFriends;
+    targetFriends.reserve(users.count());
+
+    for (UserData userData : users) {
+        if (userData.getUserSide() == UserData::UserSide::kMyFriend) {
+            myFriends.append(userData);
+        } else {
+            targetFriends.append(userData);
+        }
+    }
+
+    storeUsers(myFriends, UserData::UserSide::kMyFriend);
+    storeUsers(targetFriends, UserData::UserSide::kTargetFriend);
+}
+
+void FriendsDb::storeUsers(QList<UserData> users, UserData::UserSide userSide)
+{
+    if (users.isEmpty()) {
+        return;
+    }
+
     QVariantList userIdList;
+    QVariantList parentIdList;
+    QVariantList levelList;
     QVariantList countryList;
     QVariantList cityList;
     QVariantList homeTownList;
     QVariantList timezoneList;
 
-    for (UserData userData : user.getFriends()) {
+    for (UserData userData : users) {
         userIdList.push_back(userData.getUserId());
+        parentIdList.push_back(userData.getParentId());
+        levelList.push_back(userData.getLevel());
         countryList.push_back(userData.getCountry());
         cityList.push_back(userData.getCity());
         homeTownList.push_back(userData.getHomeTown());
@@ -131,20 +158,17 @@ void FriendsDb::storeFriends(const User& user)
     bool success = true;
 
     {
-        QString parentId = QString::number(user.getUserData().getUserId());
-        QString level = QString::number(user.getUserData().getLevel());
-
-        QString tableToInsert = getTableForUserSide(user.getUserData().getUserSide());
+        QString tableToInsert = getTableForUserSide(userSide);
 
         QSqlQuery query("INSERT OR IGNORE INTO " + tableToInsert +
                         " (" USER_ID_COLUMN ", "
                         PARENT_ID ", "
                         LEVEL_COLUMN  ") "
-                        " VALUES (?, "
-                        + parentId + ", "
-                        + level + ")");
+                        " VALUES (?, ?, ?)");
 
         query.addBindValue(userIdList);
+        query.addBindValue(parentIdList);
+        query.addBindValue(levelList);
 
         success = success && query.execBatch();
 
@@ -284,8 +308,12 @@ QList<UserData> FriendsDb::getUserFullChain(int mutualUserId)
 
     QList<UserData> myFriendsChain = reverse(getUserChain(mutualUserId, UserData::UserSide::kMyFriend));
     QList<UserData> targetFriendsChain = getUserChain(mutualUserId, UserData::UserSide::kTargetFriend);
+    if (!targetFriendsChain.isEmpty()) {
+        targetFriendsChain.removeFirst();
+    }
 
     result = myFriendsChain;
     result.append(targetFriendsChain);
     return result;
 }
+
