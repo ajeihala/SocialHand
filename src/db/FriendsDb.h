@@ -15,15 +15,24 @@ public:
     virtual ~FriendsDb();
     
 public: // FrindsStorage
-    virtual void storeFriends(const User& user);
+    virtual void clearAll();
 
-signals:
-    
-public slots:
+    virtual void storeInitialUser(const UserData& userData);
+    virtual void storeFriends(const User& user);
+    virtual QList<UserData> findMutualFriends();
 
 private:
-    bool createTables();
+    QString getTableForUserSide(UserData::UserSide userSide);
+    bool getUserData(int userId, UserData& userData);
+    bool getUserData(int userId, UserData::UserSide userSide, UserData& userData);
 
+    QList<UserData> getUserChain(int fromUserId, UserData::UserSide userSide);
+
+private:
+    void initDb();
+    void closeDb();
+    bool createTables();
+    QString getDbPath();
 
 private:
     QSqlDatabase* db;

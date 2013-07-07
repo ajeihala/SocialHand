@@ -34,6 +34,13 @@ void VKGetFriends::doStartRequest(int userId)
     }
 }
 
+void VKGetFriends::doCancel()
+{
+    if (reply != nullptr) {
+        reply->abort();
+    }
+}
+
 void VKGetFriends::onFinished(QNetworkReply* finishedReply)
 {
     QByteArray bytes = finishedReply->readAll();
@@ -52,6 +59,7 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
         QList<UserData> friendsList;
 
         int friendsLevel = getUserData().getLevel() + 1;
+        UserData::UserSide userSide = getUserData().getUserSide();
 
         for (QJsonValue value : array) {
             QJsonObject object = value.toObject();
@@ -65,7 +73,7 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
                 QJsonValue homeTown = object.value("home_town");
                 QJsonValue timeZoneValue = object.value("timezone");
 
-                UserData data(userIdValue.toDouble(), friendsLevel);
+                UserData data(userIdValue.toDouble(), friendsLevel, userSide);
                 data.setCountry(countryValue.toString());
                 data.setCity(cityValue.toString());
                 data.setHomeTown(homeTown.toString());

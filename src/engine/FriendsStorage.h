@@ -1,7 +1,9 @@
 #ifndef FRIENDSSTORAGE_H
 #define FRIENDSSTORAGE_H
 
-#include <QStringList>
+#include <QList>
+
+#include "engine/User.h"
 
 class User;
 
@@ -10,7 +12,11 @@ class FriendsStorage
 public:
     virtual ~FriendsStorage() { }
 
+    virtual void clearAll() = 0;
+
+    virtual void storeInitialUser(const UserData& userData) = 0;
     virtual void storeFriends(const User& user) = 0;
+    virtual QList<UserData> findMutualFriends() = 0;
 };
 
 #endif // FRIENDSSTORAGE_H

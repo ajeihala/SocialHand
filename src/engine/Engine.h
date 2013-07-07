@@ -9,32 +9,36 @@
 class AuthManager;
 class SocialRequestFactory;
 class FriendsStorage;
+class SearchStrategy;
 
 class Engine : public QObject, private RequestsQueue::Listener
 {
     Q_OBJECT
 public:
-    Engine(AuthManager* auth, SocialRequestFactory* socialRequestFactory, FriendsStorage* storage, QObject* parent = 0);
+    Engine(AuthManager* auth, SocialRequestFactory* socialRequestFactory, FriendsStorage* storage, SearchStrategy* searchStrategy, QObject* parent = 0);
 
     // for qml only
     explicit Engine(QObject* parent = 0);
 signals:
     
 public slots:
-    void start();
+    void start(QString target);
     
 private: // RequestsQueue::Listener
     virtual void requestFinished(const User& user);
 
 private:
     void startRequests(QList<UserData> usersList);
+    void processSearchIteration(const User& user);
 
 private:
-    AuthManager* _authManager;
-    SocialRequestFactory* _socialRequestFactory;
-    FriendsStorage* _storage;
+    AuthManager* authManager;
+    SocialRequestFactory* socialRequestFactory;
+    FriendsStorage* storage;
+    SearchStrategy* searchStrategy;
 
-    RequestsQueue _requestsQueue;
+    int targetUserId;
+    RequestsQueue requestsQueue;
 };
 
 #endif // ENGINE_H

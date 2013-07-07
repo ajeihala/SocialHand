@@ -7,8 +7,13 @@
 class UserData
 {
 public:
+    enum class UserSide {
+        kMyFriend,
+        kTargetFriend
+    };
+
     UserData();
-    UserData(int userId, int level);
+    UserData(int userId, int level, UserSide userSide);
 
 public:
     int getUserId() const;
@@ -29,9 +34,13 @@ public:
     int getTimezone() const;
     void setTimezone(int value);
 
+    UserSide getUserSide() const;
+    void setUserSide(const UserSide& value);
+
 private:
     int userId;
     int level;
+    UserSide userSide;
     QString country;
     QString city;
     QString homeTown;
@@ -40,9 +49,6 @@ private:
 
 class User
 {
-public:
-    static const int kUnknown = - 1;
-
 public:
     User(const UserData& userData, QList<UserData> friends = QList<UserData>());
 

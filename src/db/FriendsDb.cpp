@@ -6,6 +6,7 @@
 #include "engine/User.h"
 
 #define MY_FRIENDS_TABLE "MY_FRIENDS"
+#define TARGET_FRIENDS_TABLE "TARGET_FRIENDS"
 #define USER_ID_COLUMN "USER_ID"
 #define PARENT_ID "PARENT_ID"
 #define LEVEL_COLUMN "LEVEL"
@@ -16,15 +17,20 @@
 #define HOME_TOWN_COLUMN "HOMETOWN"
 #define TIMEZONE_COLUMN "TIMEZONE"
 
-#define JOINED_TABLE_NAME   MY_FRIENDS_TABLE \
-    " LEFT INNER JOIN " DETAILS_TABLE \
-    " ON " MY_FRIENDS_TABLE "." USER_ID_COLUMN " = " DETAILS_TABLE "." USER_ID_COLUMN
-
 FriendsDb::FriendsDb(QObject *parent) :
     QObject(parent)
 {
-    QString path = PathUtils::storageFolder() + "friends.db";
+    initDb();
+}
 
+FriendsDb::~FriendsDb()
+{
+    closeDb();
+}
+
+void FriendsDb::initDb()
+{
+    QString path = getDbPath();
 
     db = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
     db->setDatabaseName(path);
@@ -39,11 +45,17 @@ FriendsDb::FriendsDb(QObject *parent) :
 
 }
 
-FriendsDb::~FriendsDb()
+void FriendsDb::closeDb()
 {
     db->close();
     delete db;
     db = NULL;
+    QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection);
+}
+
+QString FriendsDb::getDbPath()
+{
+    return PathUtils::storageFolder() + "friends.db";
 }
 
 bool FriendsDb::createTables()
@@ -62,18 +74,40 @@ bool FriendsDb::createTables()
 
     {
         QSqlQuery query;
+        QString str = "CREATE TABLE " TARGET_FRIENDS_TABLE " ("
+                      USER_ID_COLUMN " INTEGER PRIMARY KEY, "
+                      PARENT_ID " INTEGER, "
+                      LEVEL_COLUMN " INTEGER NOT NULL"
+                      ")";
+        result = query.exec(str);
+    }
+
+    {
+        QSqlQuery query;
         QString str = "CREATE TABLE " DETAILS_TABLE " ("
                       USER_ID_COLUMN " INTEGER PRIMARY KEY, "
                       COUNTRY_COLUMN " TEXT, "
                       CITY_COLUMN " TEXT, "
                       HOME_TOWN_COLUMN " TEXT, "
-                      TIMEZONE_COLUMN " INTEGER, "
-                      "FOREIGN KEY (" USER_ID_COLUMN ") REFERENCES " MY_FRIENDS_TABLE "(" USER_ID_COLUMN ")"
+                      TIMEZONE_COLUMN " INTEGER "
                       ")";
         result = result && query.exec(str);
     }
 
     return result;
+}
+
+void FriendsDb::clearAll()
+{
+    closeDb();
+    QFile::remove(getDbPath());
+    initDb();
+}
+
+void FriendsDb::storeInitialUser(const UserData& userData)
+{
+    User user(userData, QList<UserData>() << userData);
+    storeFriends(user);
 }
 
 void FriendsDb::storeFriends(const User& user)
@@ -98,9 +132,11 @@ void FriendsDb::storeFriends(const User& user)
 
     {
         QString parentId = QString::number(user.getUserData().getUserId());
-        QString level = QString::number(user.getUserData().getLevel() + 1);
+        QString level = QString::number(user.getUserData().getLevel());
 
-        QSqlQuery query("INSERT OR IGNORE INTO " MY_FRIENDS_TABLE
+        QString tableToInsert = getTableForUserSide(user.getUserData().getUserSide());
+
+        QSqlQuery query("INSERT OR IGNORE INTO " + tableToInsert +
                         " (" USER_ID_COLUMN ", "
                         PARENT_ID ", "
                         LEVEL_COLUMN  ") "
@@ -139,4 +175,88 @@ void FriendsDb::storeFriends(const User& user)
     } else {
         db->rollback();
     }
+}
+
+QList<UserData> FriendsDb::findMutualFriends()
+{
+    QList<UserData> mutualFriends;
+
+    QSqlQuery query("SELECT " MY_FRIENDS_TABLE "." USER_ID_COLUMN " FROM "
+                    MY_FRIENDS_TABLE " JOIN " TARGET_FRIENDS_TABLE
+                    " ON " MY_FRIENDS_TABLE "." USER_ID_COLUMN
+                    " = " TARGET_FRIENDS_TABLE "." USER_ID_COLUMN);
+
+    query.exec();
+
+    int userIdField = query.record().indexOf(USER_ID_COLUMN);
+
+    QList<int> userIds;
+
+    while (query.next()) {
+        int id = query.value(userIdField).toInt();
+        userIds.append(id);
+    }
+
+    for (int userId : userIds) {
+        UserData userData;
+        if (getUserData(userId, userData)) {
+            mutualFriends.append(userData);
+        }
+    }
+
+    return mutualFriends;
+}
+
+QString FriendsDb::getTableForUserSide(UserData::UserSide userSide)
+{
+    return userSide == UserData::UserSide::kMyFriend ? MY_FRIENDS_TABLE
+                                                     : TARGET_FRIENDS_TABLE;
+}
+
+bool FriendsDb::getUserData(int userId, UserData& userData)
+{
+    return getUserData(userId, UserData::UserSide::kMyFriend, userData) ||
+            getUserData(userId, UserData::UserSide::kTargetFriend, userData);
+}
+
+bool FriendsDb::getUserData(int userId, UserData::UserSide userSide, UserData& userData)
+{
+    bool result = false;
+
+    QString table = getTableForUserSide(userSide);
+
+    QSqlQuery query("SELECT * FROM "
+                    + table + " JOIN " DETAILS_TABLE
+                    " ON " + table + "." USER_ID_COLUMN
+                    " = " DETAILS_TABLE "." USER_ID_COLUMN
+                    " WHERE " + table + "." USER_ID_COLUMN
+                    " = " + QString::number(userId));
+
+    query.exec();
+
+    int userIdField = query.record().indexOf(USER_ID_COLUMN);
+    int levelField = query.record().indexOf(LEVEL_COLUMN);
+    int countryField = query.record().indexOf(COUNTRY_COLUMN);
+    int cityField = query.record().indexOf(CITY_COLUMN);
+    int homeTownField = query.record().indexOf(HOME_TOWN_COLUMN);
+    int timeZoneField = query.record().indexOf(TIMEZONE_COLUMN);
+
+    if (query.next()) {
+        userData.setUserSide(userSide);
+        userData.setUserId(query.value(userIdField).toInt());
+        userData.setLevel(query.value(levelField).toInt());
+        userData.setCountry(query.value(countryField).toString());
+        userData.setCity(query.value(cityField).toString());
+        userData.setHomeTown(query.value(homeTownField).toString());
+        userData.setTimezone(query.value(timeZoneField).toInt());
+
+        result = true;
+    }
+
+    return result;
+}
+
+QList<UserData> FriendsDb::getUserChain(int fromUserId, UserData::UserSide userSide)
+{
+
 }

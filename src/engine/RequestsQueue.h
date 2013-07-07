@@ -28,6 +28,7 @@ public:
     
 public:
     void startRequests(QList<UserData> usersList);
+    void cancellAll();
 
 private:
     void startRequest(const UserData& userData);

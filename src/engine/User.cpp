@@ -4,9 +4,10 @@ UserData::UserData()
 {
 }
 
-UserData::UserData(int userId, int level)
+UserData::UserData(int userId, int level, UserSide userSide)
     : userId(userId)
     , level(level)
+    , userSide(userSide)
     , timezone(0)
 {
 }
@@ -29,6 +30,16 @@ int UserData::getTimezone() const
 void UserData::setTimezone(int value)
 {
     timezone = value;
+}
+
+UserData::UserSide UserData::getUserSide() const
+{
+    return userSide;
+}
+
+void UserData::setUserSide(const UserData::UserSide& value)
+{
+    this->userSide = value;
 }
 
 QString UserData::getHomeTown() const

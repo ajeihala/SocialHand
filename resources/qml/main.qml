@@ -30,16 +30,21 @@ ApplicationWindow {
             }
         }
 
-        Button {
-            text: qsTr("Start")
-            onClicked: {
-                engine.start()
+        Row {
+            TextField {
+                id: targetUserFieldId
+                text: "9301933"
+                width: 200
+            }
+
+            Button {
+                text: qsTr("Start")
+                onClicked: {
+                    engine.start(targetUserFieldId.text)
+                }
             }
         }
     }
-
-
-
 
     VKAuthItem {
         id: vkAuthItemId

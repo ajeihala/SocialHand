@@ -15,6 +15,7 @@ public:
     
 public: // GetFriendsRequest
     virtual void doStartRequest(int userId);
+    virtual void doCancel();
 
 private slots:
     void onFinished(QNetworkReply* finishedReply);

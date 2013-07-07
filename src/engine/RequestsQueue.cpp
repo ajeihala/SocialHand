@@ -19,9 +19,20 @@ RequestsQueue::RequestsQueue(RequestsQueue::Listener& listener, SocialRequestFac
 
 void RequestsQueue::startRequests(QList<UserData> usersList)
 {
-    waitingRequests.append(usersList);
+    if (!usersList.isEmpty()) {
+        waitingRequests.append(usersList);
 
-    schedule();
+        schedule();
+    }
+}
+
+void RequestsQueue::cancellAll()
+{
+    scheduleTimer.stop();
+    waitingRequests.clear();
+    if (hasOutgoingRequest()) {
+        outgoingRequest->cancel();
+    }
 }
 
 void RequestsQueue::startRequest(const UserData& userData)

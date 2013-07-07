@@ -22,6 +22,10 @@ public:
         doStartRequest(userData.getUserId());
     }
 
+    void cancel() {
+        doCancel();
+    }
+
 signals:
     void friendsRequestFinished(GetFriendsRequest* request, User user);
     void friendsRequestFailed(GetFriendsRequest* request, UserData userData);
@@ -33,6 +37,7 @@ public:
 
 protected:
     virtual void doStartRequest(int userId) = 0;
+    virtual void doCancel() = 0;
 
 private:
     UserData userData;
