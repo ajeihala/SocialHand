@@ -73,7 +73,7 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
                 QJsonValue homeTown = object.value("home_town");
                 QJsonValue timeZoneValue = object.value("timezone");
 
-                UserData data(userIdValue.toDouble(), friendsLevel, userSide);
+                UserData data(userIdValue.toDouble(), getUserData().getUserId(), friendsLevel, userSide);
                 data.setCountry(countryValue.toString());
                 data.setCity(cityValue.toString());
                 data.setHomeTown(homeTown.toString());

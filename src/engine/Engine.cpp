@@ -31,10 +31,10 @@ void Engine::start(QString target)
     int initialUserId = authManager->getOriginatorUserId();
     targetUserId = target.toInt();
 
-    UserData initialUser(initialUserId, 0, UserData::UserSide::kMyFriend);
+    UserData initialUser(initialUserId, 0, 0, UserData::UserSide::kMyFriend);
     storage->storeInitialUser(initialUser);
 
-    UserData targetUser(targetUserId, 0, UserData::UserSide::kTargetFriend);
+    UserData targetUser(targetUserId, 0, 0, UserData::UserSide::kTargetFriend);
     storage->storeInitialUser(targetUser);
 
     processSearchIteration(initialUser);
@@ -59,7 +59,8 @@ void Engine::processSearchIteration(const User& user)
         }
     } else {
         requestsQueue.cancellAll();
-        qDebug() << "Found (" << mutialFriends.count() << ") !!! Mutial friend: " << mutialFriends.at(0).getUserId();
+        QList<UserData> chain = storage->getUserFullChain(mutialFriends.at(0).getUserId());
+        qDebug() << "Found (" << mutialFriends.count() << ") !!! Friends chain: " << chain;
     }
 }
 

@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QList>
+#include <QDebug>
 
 class UserData
 {
@@ -13,11 +14,14 @@ public:
     };
 
     UserData();
-    UserData(int userId, int level, UserSide userSide);
+    UserData(int userId, int parentId, int level, UserSide userSide);
 
 public:
     int getUserId() const;
     void setUserId(int value);
+
+    int getParentId() const;
+    void setParentId(int value);
 
     int getLevel() const;
     void setLevel(int value);
@@ -39,6 +43,7 @@ public:
 
 private:
     int userId;
+    int parentId;
     int level;
     UserSide userSide;
     QString country;
@@ -64,5 +69,7 @@ private:
     QList<UserData> friends;
 
 };
+
+QDebug operator<< (QDebug d, const UserData& userData);
 
 #endif // USER_H

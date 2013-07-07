@@ -20,6 +20,7 @@ public: // FrindsStorage
     virtual void storeInitialUser(const UserData& userData);
     virtual void storeFriends(const User& user);
     virtual QList<UserData> findMutualFriends();
+    virtual QList<UserData> getUserFullChain(int mutualUserId);
 
 private:
     QString getTableForUserSide(UserData::UserSide userSide);
@@ -27,6 +28,14 @@ private:
     bool getUserData(int userId, UserData::UserSide userSide, UserData& userData);
 
     QList<UserData> getUserChain(int fromUserId, UserData::UserSide userSide);
+
+    template <typename T>
+    QList<T> reverse(const QList<T>& list) {
+        QList<T> result;
+        result.reserve(list.size());
+        std::reverse_copy(list.begin(), list.end(), std::back_inserter(result));
+        return result;
+    }
 
 private:
     void initDb();

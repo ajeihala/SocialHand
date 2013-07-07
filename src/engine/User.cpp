@@ -1,11 +1,13 @@
 #include "engine/User.h"
 
 UserData::UserData()
+    : UserData(0, 0, 0, UserSide::kMyFriend)
 {
 }
 
-UserData::UserData(int userId, int level, UserSide userSide)
+UserData::UserData(int userId, int parentId, int level, UserSide userSide)
     : userId(userId)
+    , parentId(parentId)
     , level(level)
     , userSide(userSide)
     , timezone(0)
@@ -20,6 +22,16 @@ int UserData::getUserId() const
 void UserData::setUserId(int value)
 {
     userId = value;
+}
+
+int UserData::getParentId() const
+{
+    return parentId;
+}
+
+void UserData::setParentId(int value)
+{
+    this->parentId = value;
 }
 
 int UserData::getTimezone() const
@@ -108,6 +120,11 @@ void User::setFriends(const QList<UserData>& value)
     this->friends = value;
 }
 
+QDebug operator <<(QDebug d, const UserData& userData)
+{
+    d << "[" << userData.getUserId() << "]";
+    return d;
+}
 
 
 

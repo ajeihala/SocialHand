@@ -235,6 +235,7 @@ bool FriendsDb::getUserData(int userId, UserData::UserSide userSide, UserData& u
     query.exec();
 
     int userIdField = query.record().indexOf(USER_ID_COLUMN);
+    int parentIdField = query.record().indexOf(PARENT_ID);
     int levelField = query.record().indexOf(LEVEL_COLUMN);
     int countryField = query.record().indexOf(COUNTRY_COLUMN);
     int cityField = query.record().indexOf(CITY_COLUMN);
@@ -244,6 +245,7 @@ bool FriendsDb::getUserData(int userId, UserData::UserSide userSide, UserData& u
     if (query.next()) {
         userData.setUserSide(userSide);
         userData.setUserId(query.value(userIdField).toInt());
+        userData.setParentId(query.value(parentIdField).toInt());
         userData.setLevel(query.value(levelField).toInt());
         userData.setCountry(query.value(countryField).toString());
         userData.setCity(query.value(cityField).toString());
@@ -258,5 +260,32 @@ bool FriendsDb::getUserData(int userId, UserData::UserSide userSide, UserData& u
 
 QList<UserData> FriendsDb::getUserChain(int fromUserId, UserData::UserSide userSide)
 {
+    QList<UserData> result;
 
+    UserData userData;
+    int nextId = fromUserId;
+    int level = 0;
+
+    do {
+        if (getUserData(nextId, userSide, userData)) {
+            result.append(userData);
+
+            nextId = userData.getParentId();
+            level = userData.getLevel();
+        }
+    } while (level > 0);
+
+    return result;
+}
+
+QList<UserData> FriendsDb::getUserFullChain(int mutualUserId)
+{
+    QList<UserData> result;
+
+    QList<UserData> myFriendsChain = reverse(getUserChain(mutualUserId, UserData::UserSide::kMyFriend));
+    QList<UserData> targetFriendsChain = getUserChain(mutualUserId, UserData::UserSide::kTargetFriend);
+
+    result = myFriendsChain;
+    result.append(targetFriendsChain);
+    return result;
 }
