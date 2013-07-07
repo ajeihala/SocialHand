@@ -31,7 +31,7 @@ public:
     void cancellAll();
 
 private:
-    void startRequest(const User& userData);
+    void startRequest(const User& user);
 
     void schedule();
 
@@ -39,7 +39,7 @@ private:
 
 private slots:
     void onGetFriendsRequestFinished(GetFriendsRequest* request, UserList users);
-    void onGetFriendsRequestFailed(GetFriendsRequest* request, User userData);
+    void onGetFriendsRequestFailed(GetFriendsRequest* request, User user);
     void onScheduleTimer();
 
 private:

@@ -93,10 +93,9 @@ void User::setCountry(const QString& value)
     this->country = value;
 }
 
-
-QDebug operator <<(QDebug d, const User& userData)
+QDebug operator <<(QDebug d, const User& user)
 {
-    d << "[" << userData.getUserId() << "]";
+    d << "[" << user.getUserId() << "]";
     return d;
 }
 

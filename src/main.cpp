@@ -32,44 +32,6 @@ int main(int argc, char *argv[])
 
     FriendsDb db;
 
-//    UserData data(1111, 2, UserData::UserSide::kMyFriend);
-//    data.setCity("33");
-//    data.setCountry("44");
-
-//    UserData parent(3, 1, UserData::UserSide::kMyFriend);
-//    User user(parent, QList<UserData>() << data);
-
-//    db.storeFriends(user);
-
-//    UserData data1(2222, 2, UserData::UserSide::kTargetFriend);
-//    data1.setCity("33");
-//    data1.setCountry("44");
-
-//    UserData parent1(55, 1, UserData::UserSide::kTargetFriend);
-//    User user1(parent1, QList<UserData>() << data1);
-
-//    db.storeFriends(user1);
-
-
-//    int parent = 1;
-//    QStringList l;
-//    for (int i = 0; i < 100; i++) {
-//        l.append(QString::number(i));
-//    }
-
-//    QTime start = QTime::currentTime();
-
-//    for (int i = 0; i < 10000; i++) {
-//        l.clear();
-//        for (int j = 0; j < 100; j++) {
-//            l.append(QString::number(i) + QString::number(j));
-//        }
-//        db.storeFriends(l, QString::number(i), i);
-//    }
-
-//    QTime end = QTime::currentTime();
-//    qDebug() << "DB: " << start.msecsTo(end);
-
     DefaultSearchStrategy searchStrategy;
 
     Engine engine(&vkAuth, &vkSocialRequestFactory, &db, &searchStrategy);

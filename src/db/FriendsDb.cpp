@@ -104,9 +104,9 @@ void FriendsDb::clearAll()
     initDb();
 }
 
-void FriendsDb::storeUser(const User& userData)
+void FriendsDb::storeUser(const User& user)
 {
-    storeUsers(UserList() << userData);
+    storeUsers(UserList() << user);
 }
 
 void FriendsDb::storeUsers(UserList users)
@@ -117,11 +117,11 @@ void FriendsDb::storeUsers(UserList users)
     UserList targetFriends;
     targetFriends.reserve(users.count());
 
-    for (User userData : users) {
-        if (userData.getUserSide() == User::UserSide::kMyFriend) {
-            myFriends.append(userData);
+    for (User user : users) {
+        if (user.getUserSide() == User::UserSide::kMyFriend) {
+            myFriends.append(user);
         } else {
-            targetFriends.append(userData);
+            targetFriends.append(user);
         }
     }
 
@@ -143,14 +143,14 @@ void FriendsDb::storeUsers(UserList users, User::UserSide userSide)
     QVariantList homeTownList;
     QVariantList timezoneList;
 
-    for (User userData : users) {
-        userIdList.push_back(userData.getUserId());
-        parentIdList.push_back(userData.getParentId());
-        levelList.push_back(userData.getLevel());
-        countryList.push_back(userData.getCountry());
-        cityList.push_back(userData.getCity());
-        homeTownList.push_back(userData.getHomeTown());
-        timezoneList.push_back(userData.getTimezone());
+    for (User user : users) {
+        userIdList.push_back(user.getUserId());
+        parentIdList.push_back(user.getParentId());
+        levelList.push_back(user.getLevel());
+        countryList.push_back(user.getCountry());
+        cityList.push_back(user.getCity());
+        homeTownList.push_back(user.getHomeTown());
+        timezoneList.push_back(user.getTimezone());
     }
 
     db->transaction();
@@ -222,9 +222,9 @@ UserList FriendsDb::findMutualFriends()
     }
 
     for (int userId : userIds) {
-        User userData;
-        if (getUserData(userId, userData)) {
-            mutualFriends.append(userData);
+        User user;
+        if (getUser(userId, user)) {
+            mutualFriends.append(user);
         }
     }
 
@@ -237,13 +237,13 @@ QString FriendsDb::getTableForUserSide(User::UserSide userSide)
                                                      : TARGET_FRIENDS_TABLE;
 }
 
-bool FriendsDb::getUserData(int userId, User& userData)
+bool FriendsDb::getUser(int userId, User& user)
 {
-    return getUserData(userId, User::UserSide::kMyFriend, userData) ||
-            getUserData(userId, User::UserSide::kTargetFriend, userData);
+    return getUser(userId, User::UserSide::kMyFriend, user) ||
+            getUser(userId, User::UserSide::kTargetFriend, user);
 }
 
-bool FriendsDb::getUserData(int userId, User::UserSide userSide, User& userData)
+bool FriendsDb::getUser(int userId, User::UserSide userSide, User& user)
 {
     bool result = false;
 
@@ -267,14 +267,14 @@ bool FriendsDb::getUserData(int userId, User::UserSide userSide, User& userData)
     int timeZoneField = query.record().indexOf(TIMEZONE_COLUMN);
 
     if (query.next()) {
-        userData.setUserSide(userSide);
-        userData.setUserId(query.value(userIdField).toInt());
-        userData.setParentId(query.value(parentIdField).toInt());
-        userData.setLevel(query.value(levelField).toInt());
-        userData.setCountry(query.value(countryField).toString());
-        userData.setCity(query.value(cityField).toString());
-        userData.setHomeTown(query.value(homeTownField).toString());
-        userData.setTimezone(query.value(timeZoneField).toInt());
+        user.setUserSide(userSide);
+        user.setUserId(query.value(userIdField).toInt());
+        user.setParentId(query.value(parentIdField).toInt());
+        user.setLevel(query.value(levelField).toInt());
+        user.setCountry(query.value(countryField).toString());
+        user.setCity(query.value(cityField).toString());
+        user.setHomeTown(query.value(homeTownField).toString());
+        user.setTimezone(query.value(timeZoneField).toInt());
 
         result = true;
     }
@@ -286,16 +286,16 @@ UserList FriendsDb::getUserChain(int fromUserId, User::UserSide userSide)
 {
     UserList result;
 
-    User userData;
+    User user;
     int nextId = fromUserId;
     int level = 0;
 
     do {
-        if (getUserData(nextId, userSide, userData)) {
-            result.append(userData);
+        if (getUser(nextId, userSide, user)) {
+            result.append(user);
 
-            nextId = userData.getParentId();
-            level = userData.getLevel();
+            nextId = user.getParentId();
+            level = user.getLevel();
         }
     } while (level > 0);
 

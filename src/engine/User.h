@@ -54,6 +54,6 @@ private:
 
 typedef QList<User> UserList;
 
-QDebug operator<< (QDebug d, const User& userData);
+QDebug operator<< (QDebug d, const User& user);
 
 #endif // USER_H

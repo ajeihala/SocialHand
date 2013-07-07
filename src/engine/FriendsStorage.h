@@ -14,7 +14,7 @@ public:
 
     virtual void clearAll() = 0;
 
-    virtual void storeUser(const User& userData) = 0;
+    virtual void storeUser(const User& user) = 0;
     virtual void storeUsers(UserList users) = 0;
     virtual UserList findMutualFriends() = 0;
     virtual UserList getUserFullChain(int mutualUserId) = 0;

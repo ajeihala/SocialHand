@@ -46,7 +46,7 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
     QByteArray bytes = finishedReply->readAll();
     QString result(bytes);
 
-    qDebug() << "VK response for userId " << getUserData().getUserId() << ": " << result;
+    qDebug() << "VK response for userId " << getUser().getUserId() << ": " << result;
 
     if (finishedReply->error() == QNetworkReply::NoError && !result.isEmpty())
     {
@@ -58,8 +58,8 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
 
         UserList friendsList;
 
-        int friendsLevel = getUserData().getLevel() + 1;
-        User::UserSide userSide = getUserData().getUserSide();
+        int friendsLevel = getUser().getLevel() + 1;
+        User::UserSide userSide = getUser().getUserSide();
 
         for (QJsonValue value : array) {
             QJsonObject object = value.toObject();
@@ -73,7 +73,7 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
                 QJsonValue homeTown = object.value("home_town");
                 QJsonValue timeZoneValue = object.value("timezone");
 
-                User data(userIdValue.toDouble(), getUserData().getUserId(), friendsLevel, userSide);
+                User data(userIdValue.toDouble(), getUser().getUserId(), friendsLevel, userSide);
                 data.setCountry(countryValue.toString());
                 data.setCity(cityValue.toString());
                 data.setHomeTown(homeTown.toString());
@@ -84,8 +84,8 @@ void VKGetFriends::onFinished(QNetworkReply* finishedReply)
 
         emit friendsRequestFinished(this, friendsList);
     } else {
-        qDebug() << "Some error on VK request for userId " << getUserData().getUserId();
-        emit friendsRequestFailed(this, getUserData());
+        qDebug() << "Some error on VK request for userId " << getUser().getUserId();
+        emit friendsRequestFailed(this, getUser());
     }
 
     finishedReply->deleteLater();

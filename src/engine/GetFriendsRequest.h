@@ -16,10 +16,10 @@ public:
         : QObject(parent)
     { }
 
-    void startRequest(const User& userData)
+    void startRequest(const User& user)
     {
-        this->userData = userData;
-        doStartRequest(userData.getUserId());
+        this->user = user;
+        doStartRequest(user.getUserId());
     }
 
     void cancel() {
@@ -28,11 +28,11 @@ public:
 
 signals:
     void friendsRequestFinished(GetFriendsRequest* request, UserList users);
-    void friendsRequestFailed(GetFriendsRequest* request, User userData);
+    void friendsRequestFailed(GetFriendsRequest* request, User user);
 
 public:
-    User& getUserData() {
-        return userData;
+    User& getUser() {
+        return user;
     }
 
 protected:
@@ -40,7 +40,7 @@ protected:
     virtual void doCancel() = 0;
 
 private:
-    User userData;
+    User user;
 };
 
 #endif // GETFRIENDSREQUEST_H

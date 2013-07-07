@@ -17,7 +17,7 @@ public:
 public: // FrindsStorage
     virtual void clearAll();
 
-    virtual void storeUser(const User& userData);
+    virtual void storeUser(const User& user);
     virtual void storeUsers(UserList users);
     virtual UserList findMutualFriends();
     virtual UserList getUserFullChain(int mutualUserId);
@@ -26,8 +26,8 @@ private:
     virtual void storeUsers(UserList users, User::UserSide userSide);
 
     QString getTableForUserSide(User::UserSide userSide);
-    bool getUserData(int userId, User& userData);
-    bool getUserData(int userId, User::UserSide userSide, User& userData);
+    bool getUser(int userId, User& user);
+    bool getUser(int userId, User::UserSide userSide, User& user);
 
     UserList getUserChain(int fromUserId, User::UserSide userSide);
 

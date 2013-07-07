@@ -35,7 +35,7 @@ void RequestsQueue::cancellAll()
     }
 }
 
-void RequestsQueue::startRequest(const User& userData)
+void RequestsQueue::startRequest(const User& user)
 {
     GetFriendsRequest* friendsRequest = socialRequestFactory.createGetFriendsRequest();
     connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,UserList)),
@@ -44,7 +44,7 @@ void RequestsQueue::startRequest(const User& userData)
             this, SLOT(onGetFriendsRequestFailed(GetFriendsRequest*,User)));
 
     outgoingRequest = friendsRequest;
-    friendsRequest->startRequest(userData);
+    friendsRequest->startRequest(user);
 }
 
 void RequestsQueue::schedule()
@@ -70,12 +70,12 @@ void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, User
     schedule();
 }
 
-void RequestsQueue::onGetFriendsRequestFailed(GetFriendsRequest* request, User userData)
+void RequestsQueue::onGetFriendsRequestFailed(GetFriendsRequest* request, User user)
 {
     request->deleteLater();
     outgoingRequest = nullptr;
 
-    waitingRequests.push_front(userData);
+    waitingRequests.push_front(user);
     schedule();
 }
 
