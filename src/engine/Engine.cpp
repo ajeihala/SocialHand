@@ -31,40 +31,40 @@ void Engine::start(QString target)
     int initialUserId = authManager->getOriginatorUserId();
     targetUserId = target.toInt();
 
-    UserData initialUser(initialUserId, 0, 0, UserData::UserSide::kMyFriend);
+    User initialUser(initialUserId, 0, 0, User::UserSide::kMyFriend);
     storage->storeUser(initialUser);
 
-    UserData targetUser(targetUserId, 0, 0, UserData::UserSide::kTargetFriend);
+    User targetUser(targetUserId, 0, 0, User::UserSide::kTargetFriend);
     storage->storeUser(targetUser);
 
-    processSearchIteration(QList<UserData>() << initialUser);
+    processSearchIteration(UserList() << initialUser);
 }
 
-void Engine::startRequests(QList<UserData> usersList)
+void Engine::startRequests(UserList usersList)
 {
     requestsQueue.startRequests(usersList);
 }
 
-void Engine::processSearchIteration(QList<UserData> users)
+void Engine::processSearchIteration(UserList users)
 {
-    QList<UserData> mutialFriends = storage->findMutualFriends();
+    UserList mutialFriends = storage->findMutualFriends();
 
     if (mutialFriends.isEmpty()) {
         searchStrategy->onFriendsReceived(users);
 
-        QList<UserData> listToFetch = searchStrategy->getListOfUsersToFetchTheirFriends();
+        UserList listToFetch = searchStrategy->getListOfUsersToFetchTheirFriends();
 
         if (!users.isEmpty() && users.at(0).getLevel() < 2) {
             startRequests(listToFetch);
         }
     } else {
         requestsQueue.cancellAll();
-        QList<UserData> chain = storage->getUserFullChain(mutialFriends.at(0).getUserId());
+        UserList chain = storage->getUserFullChain(mutialFriends.at(0).getUserId());
         qDebug() << "Found (" << mutialFriends.count() << ") !!! Friends chain: " << chain;
     }
 }
 
-void Engine::requestFinished(QList<UserData> users)
+void Engine::requestFinished(UserList users)
 {
     storage->storeUsers(users);
     processSearchIteration(users);

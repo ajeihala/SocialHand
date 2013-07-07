@@ -9,8 +9,8 @@ class SearchStrategy
 public:
     virtual ~SearchStrategy() { }
 
-    virtual void onFriendsReceived(QList<UserData> users) = 0;
-    virtual QList<UserData> getListOfUsersToFetchTheirFriends() = 0;
+    virtual void onFriendsReceived(UserList users) = 0;
+    virtual UserList getListOfUsersToFetchTheirFriends() = 0;
 };
 
 #endif // SEARCHSTRATEGY_H

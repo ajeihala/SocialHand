@@ -17,7 +17,7 @@ RequestsQueue::RequestsQueue(RequestsQueue::Listener& listener, SocialRequestFac
     connect(&scheduleTimer, SIGNAL(timeout()), this, SLOT(onScheduleTimer()));
 }
 
-void RequestsQueue::startRequests(QList<UserData> usersList)
+void RequestsQueue::startRequests(UserList usersList)
 {
     if (!usersList.isEmpty()) {
         waitingRequests.append(usersList);
@@ -35,13 +35,13 @@ void RequestsQueue::cancellAll()
     }
 }
 
-void RequestsQueue::startRequest(const UserData& userData)
+void RequestsQueue::startRequest(const User& userData)
 {
     GetFriendsRequest* friendsRequest = socialRequestFactory.createGetFriendsRequest();
-    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,QList<UserData>)),
-            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,QList<UserData>)));
-    connect(friendsRequest, SIGNAL(friendsRequestFailed(GetFriendsRequest*,UserData)),
-            this, SLOT(onGetFriendsRequestFailed(GetFriendsRequest*,UserData)));
+    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,UserList)),
+            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,UserList)));
+    connect(friendsRequest, SIGNAL(friendsRequestFailed(GetFriendsRequest*,User)),
+            this, SLOT(onGetFriendsRequestFailed(GetFriendsRequest*,User)));
 
     outgoingRequest = friendsRequest;
     friendsRequest->startRequest(userData);
@@ -61,7 +61,7 @@ bool RequestsQueue::hasOutgoingRequest()
     return outgoingRequest != nullptr;
 }
 
-void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, QList<UserData> users)
+void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, UserList users)
 {
     request->deleteLater();
     outgoingRequest = nullptr;
@@ -70,7 +70,7 @@ void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, QLis
     schedule();
 }
 
-void RequestsQueue::onGetFriendsRequestFailed(GetFriendsRequest* request, UserData userData)
+void RequestsQueue::onGetFriendsRequestFailed(GetFriendsRequest* request, User userData)
 {
     request->deleteLater();
     outgoingRequest = nullptr;
@@ -82,7 +82,7 @@ void RequestsQueue::onGetFriendsRequestFailed(GetFriendsRequest* request, UserDa
 void RequestsQueue::onScheduleTimer()
 {
     if (!hasOutgoingRequest()) {
-        UserData nextToSend = waitingRequests.dequeue();
+        User nextToSend = waitingRequests.dequeue();
         startRequest(nextToSend);
     } else {
         schedule();

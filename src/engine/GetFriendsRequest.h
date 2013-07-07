@@ -16,7 +16,7 @@ public:
         : QObject(parent)
     { }
 
-    void startRequest(const UserData& userData)
+    void startRequest(const User& userData)
     {
         this->userData = userData;
         doStartRequest(userData.getUserId());
@@ -27,11 +27,11 @@ public:
     }
 
 signals:
-    void friendsRequestFinished(GetFriendsRequest* request, QList<UserData> users);
-    void friendsRequestFailed(GetFriendsRequest* request, UserData userData);
+    void friendsRequestFinished(GetFriendsRequest* request, UserList users);
+    void friendsRequestFailed(GetFriendsRequest* request, User userData);
 
 public:
-    UserData& getUserData() {
+    User& getUserData() {
         return userData;
     }
 
@@ -40,7 +40,7 @@ protected:
     virtual void doCancel() = 0;
 
 private:
-    UserData userData;
+    User userData;
 };
 
 #endif // GETFRIENDSREQUEST_H

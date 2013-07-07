@@ -5,7 +5,7 @@
 #include <QList>
 #include <QDebug>
 
-class UserData
+class User
 {
 public:
     enum class UserSide {
@@ -13,8 +13,8 @@ public:
         kTargetFriend
     };
 
-    UserData();
-    UserData(int userId, int parentId, int level, UserSide userSide);
+    User();
+    User(int userId, int parentId, int level, UserSide userSide);
 
 public:
     int getUserId() const;
@@ -52,24 +52,8 @@ private:
     int timezone;
 };
 
-//class User
-//{
-//public:
-//    User(const UserData& userData, QList<UserData> friends = QList<UserData>());
+typedef QList<User> UserList;
 
-//public:
-//    UserData getUserData() const;
-//    void setUserData(const UserData& value);
-
-//    QList<UserData> getFriends() const;
-//    void setFriends(const QList<UserData>& value);
-
-//private:
-//    UserData userData;
-//    QList<UserData> friends;
-
-//};
-
-QDebug operator<< (QDebug d, const UserData& userData);
+QDebug operator<< (QDebug d, const User& userData);
 
 #endif // USER_H

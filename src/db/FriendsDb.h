@@ -17,19 +17,19 @@ public:
 public: // FrindsStorage
     virtual void clearAll();
 
-    virtual void storeUser(const UserData& userData);
-    virtual void storeUsers(QList<UserData> users);
-    virtual QList<UserData> findMutualFriends();
-    virtual QList<UserData> getUserFullChain(int mutualUserId);
+    virtual void storeUser(const User& userData);
+    virtual void storeUsers(UserList users);
+    virtual UserList findMutualFriends();
+    virtual UserList getUserFullChain(int mutualUserId);
 
 private:
-    virtual void storeUsers(QList<UserData> users, UserData::UserSide userSide);
+    virtual void storeUsers(UserList users, User::UserSide userSide);
 
-    QString getTableForUserSide(UserData::UserSide userSide);
-    bool getUserData(int userId, UserData& userData);
-    bool getUserData(int userId, UserData::UserSide userSide, UserData& userData);
+    QString getTableForUserSide(User::UserSide userSide);
+    bool getUserData(int userId, User& userData);
+    bool getUserData(int userId, User::UserSide userSide, User& userData);
 
-    QList<UserData> getUserChain(int fromUserId, UserData::UserSide userSide);
+    UserList getUserChain(int fromUserId, User::UserSide userSide);
 
     template <typename T>
     QList<T> reverse(const QList<T>& list) {

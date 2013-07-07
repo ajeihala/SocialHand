@@ -5,14 +5,14 @@ DefaultSearchStrategy::DefaultSearchStrategy(QObject *parent) :
 {
 }
 
-void DefaultSearchStrategy::onFriendsReceived(QList<UserData> users)
+void DefaultSearchStrategy::onFriendsReceived(UserList users)
 {
     this->users = users;
 }
 
-QList<UserData> DefaultSearchStrategy::getListOfUsersToFetchTheirFriends()
+UserList DefaultSearchStrategy::getListOfUsersToFetchTheirFriends()
 {
-    QList<UserData> result;
+    UserList result;
 
     result = users;
     users.clear();

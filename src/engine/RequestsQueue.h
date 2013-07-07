@@ -20,32 +20,32 @@ public:
     public:
         virtual ~Listener() { }
 
-        virtual void requestFinished(QList<UserData> users) = 0;
+        virtual void requestFinished(UserList users) = 0;
     };
 
 public:
     explicit RequestsQueue(Listener& listener, SocialRequestFactory& socialRequestFactory, QObject *parent = 0);
     
 public:
-    void startRequests(QList<UserData> usersList);
+    void startRequests(UserList usersList);
     void cancellAll();
 
 private:
-    void startRequest(const UserData& userData);
+    void startRequest(const User& userData);
 
     void schedule();
 
     bool hasOutgoingRequest();
 
 private slots:
-    void onGetFriendsRequestFinished(GetFriendsRequest* request, QList<UserData> users);
-    void onGetFriendsRequestFailed(GetFriendsRequest* request, UserData userData);
+    void onGetFriendsRequestFinished(GetFriendsRequest* request, UserList users);
+    void onGetFriendsRequestFailed(GetFriendsRequest* request, User userData);
     void onScheduleTimer();
 
 private:
     Listener& listener;
     SocialRequestFactory& socialRequestFactory;
-    QQueue<UserData> waitingRequests;
+    QQueue<User> waitingRequests;
     GetFriendsRequest* outgoingRequest;
 
     QTimer scheduleTimer;

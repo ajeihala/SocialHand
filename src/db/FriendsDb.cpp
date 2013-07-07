@@ -104,32 +104,32 @@ void FriendsDb::clearAll()
     initDb();
 }
 
-void FriendsDb::storeUser(const UserData& userData)
+void FriendsDb::storeUser(const User& userData)
 {
-    storeUsers(QList<UserData>() << userData);
+    storeUsers(UserList() << userData);
 }
 
-void FriendsDb::storeUsers(QList<UserData> users)
+void FriendsDb::storeUsers(UserList users)
 {
-    QList<UserData> myFriends;
+    UserList myFriends;
     myFriends.reserve(users.count());
 
-    QList<UserData> targetFriends;
+    UserList targetFriends;
     targetFriends.reserve(users.count());
 
-    for (UserData userData : users) {
-        if (userData.getUserSide() == UserData::UserSide::kMyFriend) {
+    for (User userData : users) {
+        if (userData.getUserSide() == User::UserSide::kMyFriend) {
             myFriends.append(userData);
         } else {
             targetFriends.append(userData);
         }
     }
 
-    storeUsers(myFriends, UserData::UserSide::kMyFriend);
-    storeUsers(targetFriends, UserData::UserSide::kTargetFriend);
+    storeUsers(myFriends, User::UserSide::kMyFriend);
+    storeUsers(targetFriends, User::UserSide::kTargetFriend);
 }
 
-void FriendsDb::storeUsers(QList<UserData> users, UserData::UserSide userSide)
+void FriendsDb::storeUsers(UserList users, User::UserSide userSide)
 {
     if (users.isEmpty()) {
         return;
@@ -143,7 +143,7 @@ void FriendsDb::storeUsers(QList<UserData> users, UserData::UserSide userSide)
     QVariantList homeTownList;
     QVariantList timezoneList;
 
-    for (UserData userData : users) {
+    for (User userData : users) {
         userIdList.push_back(userData.getUserId());
         parentIdList.push_back(userData.getParentId());
         levelList.push_back(userData.getLevel());
@@ -201,9 +201,9 @@ void FriendsDb::storeUsers(QList<UserData> users, UserData::UserSide userSide)
     }
 }
 
-QList<UserData> FriendsDb::findMutualFriends()
+UserList FriendsDb::findMutualFriends()
 {
-    QList<UserData> mutualFriends;
+    UserList mutualFriends;
 
     QSqlQuery query("SELECT " MY_FRIENDS_TABLE "." USER_ID_COLUMN " FROM "
                     MY_FRIENDS_TABLE " JOIN " TARGET_FRIENDS_TABLE
@@ -222,7 +222,7 @@ QList<UserData> FriendsDb::findMutualFriends()
     }
 
     for (int userId : userIds) {
-        UserData userData;
+        User userData;
         if (getUserData(userId, userData)) {
             mutualFriends.append(userData);
         }
@@ -231,19 +231,19 @@ QList<UserData> FriendsDb::findMutualFriends()
     return mutualFriends;
 }
 
-QString FriendsDb::getTableForUserSide(UserData::UserSide userSide)
+QString FriendsDb::getTableForUserSide(User::UserSide userSide)
 {
-    return userSide == UserData::UserSide::kMyFriend ? MY_FRIENDS_TABLE
+    return userSide == User::UserSide::kMyFriend ? MY_FRIENDS_TABLE
                                                      : TARGET_FRIENDS_TABLE;
 }
 
-bool FriendsDb::getUserData(int userId, UserData& userData)
+bool FriendsDb::getUserData(int userId, User& userData)
 {
-    return getUserData(userId, UserData::UserSide::kMyFriend, userData) ||
-            getUserData(userId, UserData::UserSide::kTargetFriend, userData);
+    return getUserData(userId, User::UserSide::kMyFriend, userData) ||
+            getUserData(userId, User::UserSide::kTargetFriend, userData);
 }
 
-bool FriendsDb::getUserData(int userId, UserData::UserSide userSide, UserData& userData)
+bool FriendsDb::getUserData(int userId, User::UserSide userSide, User& userData)
 {
     bool result = false;
 
@@ -282,11 +282,11 @@ bool FriendsDb::getUserData(int userId, UserData::UserSide userSide, UserData& u
     return result;
 }
 
-QList<UserData> FriendsDb::getUserChain(int fromUserId, UserData::UserSide userSide)
+UserList FriendsDb::getUserChain(int fromUserId, User::UserSide userSide)
 {
-    QList<UserData> result;
+    UserList result;
 
-    UserData userData;
+    User userData;
     int nextId = fromUserId;
     int level = 0;
 
@@ -302,12 +302,12 @@ QList<UserData> FriendsDb::getUserChain(int fromUserId, UserData::UserSide userS
     return result;
 }
 
-QList<UserData> FriendsDb::getUserFullChain(int mutualUserId)
+UserList FriendsDb::getUserFullChain(int mutualUserId)
 {
-    QList<UserData> result;
+    UserList result;
 
-    QList<UserData> myFriendsChain = reverse(getUserChain(mutualUserId, UserData::UserSide::kMyFriend));
-    QList<UserData> targetFriendsChain = getUserChain(mutualUserId, UserData::UserSide::kTargetFriend);
+    UserList myFriendsChain = reverse(getUserChain(mutualUserId, User::UserSide::kMyFriend));
+    UserList targetFriendsChain = getUserChain(mutualUserId, User::UserSide::kTargetFriend);
     if (!targetFriendsChain.isEmpty()) {
         targetFriendsChain.removeFirst();
     }
