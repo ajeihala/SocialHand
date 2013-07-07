@@ -17,7 +17,7 @@ public slots:
     void saveLoginInformation(QString userId, QString accessToken, QString expiresIn);
 
 public: // AuthManager
-    virtual QString getOriginatorUserId();
+    virtual int getOriginatorUserId();
 
 private:
     static QString kVkGroup;

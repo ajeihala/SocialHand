@@ -2,9 +2,10 @@
 #define REQUESTSQUEUE_H
 
 #include <QObject>
-#include <QMap>
-#include <QStringList>
 #include <QQueue>
+#include <QTimer>
+
+#include "engine/User.h"
 
 class GetFriendsRequest;
 class SocialRequestFactory;
@@ -19,44 +20,34 @@ public:
     public:
         virtual ~Listener() { }
 
-        virtual void requestFinished(QString parentId, QStringList friendsList, int level) = 0;
+        virtual void requestFinished(const User& user) = 0;
     };
 
 public:
     explicit RequestsQueue(Listener& listener, SocialRequestFactory& socialRequestFactory, QObject *parent = 0);
     
 public:
-    void startRequests(QStringList userIdList, int level);
+    void startRequests(QList<UserData> usersList);
 
 private:
-    void startRequest(QString userId, int level);
+    void startRequest(const UserData& userData);
 
     void schedule();
 
     bool hasOutgoingRequest();
 
 private slots:
-    void onGetFriendsRequestFinished(GetFriendsRequest* request, QString userId, QStringList friendsList);
+    void onGetFriendsRequestFinished(GetFriendsRequest* request, User user);
+    void onGetFriendsRequestFailed(GetFriendsRequest* request, UserData userData);
     void onScheduleTimer();
 
 private:
-    Listener& _listener;
-    SocialRequestFactory& _socialRequestFactory;
-    QMap<GetFriendsRequest*, int> _levelsMap;
+    Listener& listener;
+    SocialRequestFactory& socialRequestFactory;
+    QQueue<UserData> waitingRequests;
+    GetFriendsRequest* outgoingRequest;
 
-    class WaitingRequest
-    {
-    public:
-        QString userId;
-        int level;
-        WaitingRequest(QString userId, int level)
-        {
-            this->userId = userId;
-            this->level = level;
-        }
-    };
-
-    QQueue<WaitingRequest> _waitingRequests;
+    QTimer scheduleTimer;
 };
 
 #endif // REQUESTSQUEUE_H

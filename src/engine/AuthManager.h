@@ -6,7 +6,7 @@ class AuthManager
 public:
     virtual ~AuthManager() { }
 
-    virtual QString getOriginatorUserId() = 0;
+    virtual int getOriginatorUserId() = 0;
 };
 
 #endif // AUTHMANAGER_H

@@ -3,12 +3,14 @@
 
 #include <QStringList>
 
+class User;
+
 class FriendsStorage
 {
 public:
     virtual ~FriendsStorage() { }
 
-    virtual void storeFriends(QStringList friendsList, QString parentId, int level) = 0;
+    virtual void storeFriends(const User& user) = 0;
 };
 
 #endif // FRIENDSSTORAGE_H

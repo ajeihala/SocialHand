@@ -5,34 +5,37 @@
 #include <QString>
 #include <QStringList>
 
+#include "engine/User.h"
+
 class GetFriendsRequest : public QObject
 {
     Q_OBJECT
 public:
     virtual ~GetFriendsRequest() { }
-    GetFriendsRequest(QObject *parent = 0)
+    GetFriendsRequest(QObject* parent = 0)
         : QObject(parent)
     { }
 
-    void startRequest(QString userId)
+    void startRequest(const UserData& userData)
     {
-        _userId = userId;
-        doStartRequest(userId);
+        this->userData = userData;
+        doStartRequest(userData.getUserId());
     }
 
 signals:
-    void friendsRequestFinished(GetFriendsRequest* request, QString userId, QStringList friendsList);
+    void friendsRequestFinished(GetFriendsRequest* request, User user);
+    void friendsRequestFailed(GetFriendsRequest* request, UserData userData);
 
 public:
-    QString getUserId() {
-        return _userId;
+    UserData& getUserData() {
+        return userData;
     }
 
 protected:
-    virtual void doStartRequest(QString userId) = 0;
+    virtual void doStartRequest(int userId) = 0;
 
 private:
-    QString _userId;
+    UserData userData;
 };
 
 #endif // GETFRIENDSREQUEST_H

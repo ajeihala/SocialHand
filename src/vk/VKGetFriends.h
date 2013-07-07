@@ -11,22 +11,18 @@ class VKGetFriends : public GetFriendsRequest
 {
     Q_OBJECT
 public:
-    explicit VKGetFriends(QObject *parent = 0);
+    explicit VKGetFriends(QObject* parent = 0);
     
 public: // GetFriendsRequest
-    virtual void doStartRequest(QString userId);
+    virtual void doStartRequest(int userId);
 
-signals:
-    
-public slots:
-    
 private slots:
-    void onFinished(QNetworkReply* reply);
+    void onFinished(QNetworkReply* finishedReply);
 
 private:
     static QNetworkAccessManager* getNetworkAccessManager();
 
-    QNetworkReply* m_reply;
+    QNetworkReply* reply;
 };
 
 #endif // VKGETFRIENDS_H

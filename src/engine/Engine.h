@@ -24,10 +24,10 @@ public slots:
     void start();
     
 private: // RequestsQueue::Listener
-    virtual void requestFinished(QString parentId, QStringList friendsList, int level);
+    virtual void requestFinished(const User& user);
 
 private:
-    void startRequests(QStringList userIdList, int level);
+    void startRequests(QList<UserData> usersList);
 
 private:
     AuthManager* _authManager;

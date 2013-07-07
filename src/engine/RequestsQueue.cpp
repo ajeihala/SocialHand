@@ -8,61 +8,73 @@
 
 RequestsQueue::RequestsQueue(RequestsQueue::Listener& listener, SocialRequestFactory& socialRequestFactory, QObject* parent)
     : QObject(parent)
-    , _listener(listener)
-    , _socialRequestFactory(socialRequestFactory)
+    , listener(listener)
+    , socialRequestFactory(socialRequestFactory)
+    , outgoingRequest(nullptr)
 {
+    scheduleTimer.setInterval(500);
+    scheduleTimer.setSingleShot(true);
+    connect(&scheduleTimer, SIGNAL(timeout()), this, SLOT(onScheduleTimer()));
 }
 
-void RequestsQueue::startRequests(QStringList userIdList, int level)
+void RequestsQueue::startRequests(QList<UserData> usersList)
 {
-    for (QString userId : userIdList) {
-        _waitingRequests.enqueue(WaitingRequest(userId, level));
-    }
+    waitingRequests.append(usersList);
 
     schedule();
 }
 
-void RequestsQueue::startRequest(QString userId, int level)
+void RequestsQueue::startRequest(const UserData& userData)
 {
-    GetFriendsRequest* friendsRequest = _socialRequestFactory.createGetFriendsRequest();
-    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,QString,QStringList)),
-            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,QString,QStringList)));
+    GetFriendsRequest* friendsRequest = socialRequestFactory.createGetFriendsRequest();
+    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,User)),
+            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,User)));
+    connect(friendsRequest, SIGNAL(friendsRequestFailed(GetFriendsRequest*,UserData)),
+            this, SLOT(onGetFriendsRequestFailed(GetFriendsRequest*,UserData)));
 
-    _levelsMap.insert(friendsRequest, level);
-    friendsRequest->startRequest(userId);
+    outgoingRequest = friendsRequest;
+    friendsRequest->startRequest(userData);
 }
 
 void RequestsQueue::schedule()
 {
-    if (!_waitingRequests.isEmpty() && !hasOutgoingRequest()) {
-        QTimer::singleShot(500, this, SLOT(onScheduleTimer()));
+    if (!scheduleTimer.isActive()) {
+        if (!waitingRequests.isEmpty()) {
+            scheduleTimer.start();
+        }
     }
 }
 
 bool RequestsQueue::hasOutgoingRequest()
 {
-    return !_levelsMap.isEmpty();
+    return outgoingRequest != nullptr;
 }
 
-void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, QString userId, QStringList friendsList)
+void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, User user)
 {
-    qDebug() << "List for user id: " << userId << " : " << friendsList;
-
-    auto iter = _levelsMap.find(request);
-    if (iter != _levelsMap.end()) {
-        int level = iter.value();
-        _listener.requestFinished(userId, friendsList, level);
-        _levelsMap.erase(iter);
-    }
-
     request->deleteLater();
+    outgoingRequest = nullptr;
 
+    listener.requestFinished(user);
+    schedule();
+}
+
+void RequestsQueue::onGetFriendsRequestFailed(GetFriendsRequest* request, UserData userData)
+{
+    request->deleteLater();
+    outgoingRequest = nullptr;
+
+    waitingRequests.push_front(userData);
     schedule();
 }
 
 void RequestsQueue::onScheduleTimer()
 {
-    WaitingRequest nextToSend = _waitingRequests.dequeue();
-    startRequest(nextToSend.userId, nextToSend.level);
+    if (!hasOutgoingRequest()) {
+        UserData nextToSend = waitingRequests.dequeue();
+        startRequest(nextToSend);
+    } else {
+        schedule();
+    }
 }
 

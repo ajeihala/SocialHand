@@ -15,7 +15,7 @@ public:
     virtual ~FriendsDb();
     
 public: // FrindsStorage
-    virtual void storeFriends(QStringList friendsList, QString parentId, int level);
+    virtual void storeFriends(const User& user);
 
 signals:
     
@@ -26,7 +26,7 @@ private:
 
 
 private:
-    QSqlDatabase* _db;
+    QSqlDatabase* db;
     
 };
 

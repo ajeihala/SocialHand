@@ -4,6 +4,7 @@
 #include "engine/SocialRequestFactory.h"
 #include "engine/GetFriendsRequest.h"
 #include "engine/FriendsStorage.h"
+#include "engine/User.h"
 
 #include <QDebug>
 
@@ -23,26 +24,26 @@ Engine::Engine(QObject* parent)
 
 void Engine::start()
 {
-    QString initialUserId = _authManager->getOriginatorUserId();
+    int initialUserId = _authManager->getOriginatorUserId();
 
-    _storage->storeFriends(QStringList() << initialUserId, "", 0);
+    UserData initialUser(initialUserId, 0);
+    _storage->storeFriends(User(initialUser));
 
-    startRequests(QStringList() << initialUserId, 1);
+    startRequests(QList<UserData>() << initialUser);
 }
 
-void Engine::startRequests(QStringList userIdList, int level)
+void Engine::startRequests(QList<UserData> usersList)
 {
-    _requestsQueue.startRequests(userIdList, level);
+    _requestsQueue.startRequests(usersList);
 }
 
-void Engine::requestFinished(QString parentId, QStringList friendsList, int level)
+void Engine::requestFinished(const User& user)
 {
-    qDebug() << "List for user id: " << parentId << " : " << friendsList;
+//    qDebug() << "List for user id: " << user.userData.userId << " : " << user.friends;
 
-    _storage->storeFriends(friendsList, parentId, level);
+    _storage->storeFriends(user);
 
-    ++level;
-    if (level < 3) {
-        startRequests(friendsList, level);
+    if (user.getUserData().getLevel() < 2) {
+        startRequests(user.getFriends());
     }
 }
