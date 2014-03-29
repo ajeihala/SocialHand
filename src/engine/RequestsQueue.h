@@ -6,9 +6,9 @@
 #include <QTimer>
 
 #include "engine/User.h"
+#include "engine/SocialRequestFactory.h"
 
-class GetFriendsRequest;
-class SocialRequestFactory;
+class SocialRequest;
 
 class RequestsQueue : public QObject
 {
@@ -20,33 +20,34 @@ public:
     public:
         virtual ~Listener() { }
 
-        virtual void requestFinished(UserList users) = 0;
+        virtual void requestFinished(SocialRequest* request) = 0;
     };
 
 public:
     explicit RequestsQueue(Listener& listener, SocialRequestFactory& socialRequestFactory, QObject *parent = 0);
     
 public:
-    void startRequests(UserList usersList);
-    void cancellAll();
+    void startRequests(const RequestsList& requests);
+    void cancelAll();
 
 private:
-    void startRequest(const User& user);
+    void startRequest(std::shared_ptr<SocialRequest> request);
 
     void schedule();
 
     bool hasOutgoingRequest();
 
 private slots:
-    void onGetFriendsRequestFinished(GetFriendsRequest* request, UserList users);
-    void onGetFriendsRequestFailed(GetFriendsRequest* request, User user);
+    void onSocialRequestFinished(SocialRequest* request);
+    void onSocialRequestFailed(SocialRequest* request);
+
     void onScheduleTimer();
 
 private:
     Listener& listener;
     SocialRequestFactory& socialRequestFactory;
-    QQueue<User> waitingRequests;
-    GetFriendsRequest* outgoingRequest;
+    QQueue<std::shared_ptr<SocialRequest>> waitingRequests;
+    std::shared_ptr<SocialRequest> outgoingRequest;
 
     QTimer scheduleTimer;
 };

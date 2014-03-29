@@ -34,7 +34,7 @@ ApplicationWindow {
             TextField {
                 id: targetUserFieldId
                 text: "101908810"
-                width: 200
+                width: 100
             }
 
             Button {

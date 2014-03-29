@@ -3,30 +3,28 @@
 #include <QTimer>
 #include <QDebug>
 
-#include "engine/SocialRequestFactory.h"
-#include "engine/GetFriendsRequest.h"
+#include "engine/SocialRequest.h"
 
 RequestsQueue::RequestsQueue(RequestsQueue::Listener& listener, SocialRequestFactory& socialRequestFactory, QObject* parent)
     : QObject(parent)
     , listener(listener)
     , socialRequestFactory(socialRequestFactory)
-    , outgoingRequest(nullptr)
 {
     scheduleTimer.setInterval(500);
     scheduleTimer.setSingleShot(true);
     connect(&scheduleTimer, SIGNAL(timeout()), this, SLOT(onScheduleTimer()));
 }
 
-void RequestsQueue::startRequests(UserList usersList)
+void RequestsQueue::startRequests(const RequestsList& requests)
 {
-    if (!usersList.isEmpty()) {
-        waitingRequests.append(usersList);
+    if (!requests.isEmpty()) {
+        waitingRequests.append(requests);
 
         schedule();
     }
 }
 
-void RequestsQueue::cancellAll()
+void RequestsQueue::cancelAll()
 {
     scheduleTimer.stop();
     waitingRequests.clear();
@@ -35,16 +33,16 @@ void RequestsQueue::cancellAll()
     }
 }
 
-void RequestsQueue::startRequest(const User& user)
+void RequestsQueue::startRequest(std::shared_ptr<SocialRequest> request)
 {
-    GetFriendsRequest* friendsRequest = socialRequestFactory.createGetFriendsRequest();
-    connect(friendsRequest, SIGNAL(friendsRequestFinished(GetFriendsRequest*,UserList)),
-            this, SLOT(onGetFriendsRequestFinished(GetFriendsRequest*,UserList)));
-    connect(friendsRequest, SIGNAL(friendsRequestFailed(GetFriendsRequest*,User)),
-            this, SLOT(onGetFriendsRequestFailed(GetFriendsRequest*,User)));
+    outgoingRequest = request;
 
-    outgoingRequest = friendsRequest;
-    friendsRequest->startRequest(user);
+    connect(request.get(), SIGNAL(socialRequestFinished(SocialRequest*)),
+            this, SLOT(onSocialRequestFinished(SocialRequest*)));
+    connect(request.get(), SIGNAL(socialRequestFailed(SocialRequest*)),
+            this, SLOT(onSocialRequestFailed(SocialRequest*)));
+
+    request->startRequest();
 }
 
 void RequestsQueue::schedule()
@@ -61,28 +59,27 @@ bool RequestsQueue::hasOutgoingRequest()
     return outgoingRequest != nullptr;
 }
 
-void RequestsQueue::onGetFriendsRequestFinished(GetFriendsRequest* request, UserList users)
+void RequestsQueue::onSocialRequestFinished(SocialRequest* request)
 {
-    request->deleteLater();
-    outgoingRequest = nullptr;
+    Q_ASSERT(request == outgoingRequest.get());
 
-    listener.requestFinished(users);
+    listener.requestFinished(request);
+
+    outgoingRequest = nullptr;
     schedule();
 }
 
-void RequestsQueue::onGetFriendsRequestFailed(GetFriendsRequest* request, User user)
+void RequestsQueue::onSocialRequestFailed(SocialRequest* request)
 {
-    request->deleteLater();
-    outgoingRequest = nullptr;
-
-    waitingRequests.push_front(user);
+    Q_ASSERT(request == outgoingRequest.get());
+    waitingRequests.push_front(outgoingRequest);
     schedule();
 }
 
 void RequestsQueue::onScheduleTimer()
 {
     if (!hasOutgoingRequest()) {
-        User nextToSend = waitingRequests.dequeue();
+        std::shared_ptr<SocialRequest> nextToSend = waitingRequests.dequeue();
         startRequest(nextToSend);
     } else {
         schedule();

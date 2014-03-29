@@ -1,46 +1,22 @@
 #ifndef GETFRIENDSREQUEST_H
 #define GETFRIENDSREQUEST_H
 
-#include <QObject>
 #include <QString>
 #include <QStringList>
 
-#include "engine/User.h"
+#include "engine/SocialRequest.h"
 
-class GetFriendsRequest : public QObject
+class GetFriendsRequest : public SocialRequest
 {
     Q_OBJECT
 public:
     virtual ~GetFriendsRequest() { }
-    GetFriendsRequest(QObject* parent = 0)
-        : QObject(parent)
+    GetFriendsRequest(const User& user, QObject* parent = 0)
+        : SocialRequest(SocialRequest::Type::kGetFriends, user, parent)
     { }
 
-    void startRequest(const User& user)
-    {
-        this->user = user;
-        doStartRequest(user.getUserId());
-    }
-
-    void cancel() {
-        doCancel();
-    }
-
-signals:
-    void friendsRequestFinished(GetFriendsRequest* request, UserList users);
-    void friendsRequestFailed(GetFriendsRequest* request, User user);
-
 public:
-    User& getUser() {
-        return user;
-    }
-
-protected:
-    virtual void doStartRequest(int userId) = 0;
-    virtual void doCancel() = 0;
-
-private:
-    User user;
+    virtual const UserList& getFriendsList() = 0;
 };
 
 #endif // GETFRIENDSREQUEST_H

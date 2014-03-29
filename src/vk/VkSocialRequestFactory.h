@@ -9,7 +9,7 @@ public:
     VkSocialRequestFactory();
 
 public: // SocialRequestFactory
-    virtual GetFriendsRequest* createGetFriendsRequest();
+    virtual std::shared_ptr<SocialRequest> createGetFriendsRequest(const User& user);
 };
 
 #endif // VKSOCIALREQUESTFACTORY_H

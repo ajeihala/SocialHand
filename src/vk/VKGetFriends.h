@@ -4,26 +4,23 @@
 #include <QObject>
 #include "engine/GetFriendsRequest.h"
 
-class QNetworkAccessManager;
-class QNetworkReply;
 
 class VKGetFriends : public GetFriendsRequest
 {
     Q_OBJECT
 public:
-    explicit VKGetFriends(QObject* parent = 0);
+    explicit VKGetFriends(const User& user, QObject* parent = 0);
     
 public: // GetFriendsRequest
-    virtual void doStartRequest(int userId);
-    virtual void doCancel();
+    const UserList& getFriendsList();
 
-private slots:
-    void onFinished(QNetworkReply* finishedReply);
+protected: // SocialRequest
+    virtual QUrl getRequestUrl(const QString& userId);
+    virtual void processReceivedResponse(const QByteArray& response);
 
 private:
-    static QNetworkAccessManager* getNetworkAccessManager();
+    UserList userList;
 
-    QNetworkReply* reply;
 };
 
 #endif // VKGETFRIENDS_H

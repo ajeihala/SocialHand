@@ -6,7 +6,7 @@ VkSocialRequestFactory::VkSocialRequestFactory()
 {
 }
 
-GetFriendsRequest* VkSocialRequestFactory::createGetFriendsRequest()
+std::shared_ptr<SocialRequest> VkSocialRequestFactory::createGetFriendsRequest(const User& user)
 {
-    return new VKGetFriends();
+    return std::make_shared<VKGetFriends>(user);
 }

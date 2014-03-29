@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include <memory>
 
 #include "engine/RequestsQueue.h"
 
@@ -22,14 +23,16 @@ public:
 signals:
     
 public slots:
-    void start(QString target);
+    void start(QString targetUserId);
     
 private: // RequestsQueue::Listener
-    virtual void requestFinished(UserList users);
+    virtual void requestFinished(SocialRequest* request);
 
 private:
-    void startRequests(UserList usersList);
+    void startRequests(const QList<std::shared_ptr<SocialRequest> >& requests);
     void processSearchIteration(UserList users);
+    QList<std::shared_ptr<SocialRequest>> prepareGetFriendsRequests(const UserList& list);
+    void handleFinishedRequest(SocialRequest* request);
 
 private:
     AuthManager* authManager;

@@ -56,7 +56,8 @@ HEADERS += \
     src/engine/RequestsQueue.h \
     src/engine/User.h \
     src/engine/SearchStrategy.h \
-    src/engine/DefaultSearchStrategy.h
+    src/engine/DefaultSearchStrategy.h \
+    src/engine/SocialRequest.h
 
 SOURCES += \
     src/main.cpp \
@@ -70,7 +71,8 @@ SOURCES += \
     src/db/FriendsDb.cpp \
     src/engine/RequestsQueue.cpp \
     src/engine/User.cpp \
-    src/engine/DefaultSearchStrategy.cpp
+    src/engine/DefaultSearchStrategy.cpp \
+    src/engine/SocialRequest.cpp
 
 OTHER_FILES += \
     qml/main.qml \
