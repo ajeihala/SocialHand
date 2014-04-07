@@ -20,3 +20,8 @@ Makefile
 *-build-*
 
 *.autosave
+/SocialHand.sdf
+/SocialHand.suo
+/SocialHand.vcxproj
+/SocialHand.vcxproj.filters
+/SocialHand.vcxproj.user
