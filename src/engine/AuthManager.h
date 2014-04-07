@@ -7,6 +7,7 @@ public:
     virtual ~AuthManager() { }
 
     virtual int getOriginatorUserId() = 0;
+    virtual QString getAccessToken() = 0;
 };
 
 #endif // AUTHMANAGER_H

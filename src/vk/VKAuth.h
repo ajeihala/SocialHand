@@ -18,6 +18,10 @@ public slots:
 
 public: // AuthManager
     virtual int getOriginatorUserId();
+    virtual QString getAccessToken();
+
+private:
+    QVariant getSetting(QString key);
 
 private:
     static QString kVkGroup;

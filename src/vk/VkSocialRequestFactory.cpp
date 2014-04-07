@@ -2,11 +2,12 @@
 
 #include "vk/VKGetFriends.h"
 
-VkSocialRequestFactory::VkSocialRequestFactory()
+VkSocialRequestFactory::VkSocialRequestFactory(std::shared_ptr<AuthManager> authManager)
+    : SocialRequestFactory(authManager)
 {
 }
 
 std::shared_ptr<SocialRequest> VkSocialRequestFactory::createGetFriendsRequest(const User& user)
 {
-    return std::make_shared<VKGetFriends>(user);
+    return setupRequest(std::make_shared<VKGetFriends>(user));
 }

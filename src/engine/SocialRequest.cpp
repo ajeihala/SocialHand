@@ -11,6 +11,7 @@ SocialRequest::SocialRequest(Type type, const User& user, QObject *parent)
     , type(type)
     , reply(nullptr)
     , user(user)
+    , authManager(nullptr)
 {
 }
 
@@ -18,12 +19,13 @@ void SocialRequest::startRequest()
 {
     if (reply == nullptr)
     {
-        QString userId = QString::number(user.getUserId());
+        QString userId = QString::number(getUserId());
         qDebug() << "Starting request for userId: " << userId;
 
         QNetworkAccessManager* manager = getNetworkAccessManager();
         connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(onFinished(QNetworkReply*)));
 
+        Q_ASSERT(getAuthManager() != nullptr);
         QUrl url = getRequestUrl(userId);
         reply = manager->get(QNetworkRequest(url));
     }
@@ -34,6 +36,11 @@ void SocialRequest::cancel()
     if (reply != nullptr) {
         reply->abort();
     }
+}
+
+void SocialRequest::setAuthManager(std::shared_ptr<AuthManager> authManager)
+{
+    this->authManager = authManager;
 }
 
 void SocialRequest::onFinished(QNetworkReply* finishedReply)

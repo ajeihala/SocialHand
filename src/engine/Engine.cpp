@@ -31,17 +31,9 @@ void Engine::start(QString targetUserId)
     int initialUserId = authManager->getOriginatorUserId();
 
     User initialUser(initialUserId, 0, 0, User::UserSide::kMyFriend);
-//    storage->storeUser(initialUser);
-
     User targetUser(targetUserId.toInt(), 0, 0, User::UserSide::kTargetFriend);
-//    storage->storeUser(targetUser);
 
     processSearchIteration(UserList() << initialUser << targetUser);
-}
-
-void Engine::startRequests(const QList<std::shared_ptr<SocialRequest> >& requests)
-{
-    requestsQueue.startRequests(requests);
 }
 
 void Engine::processSearchIteration(UserList users)
@@ -57,7 +49,7 @@ void Engine::processSearchIteration(UserList users)
         auto friendsRequests = prepareGetFriendsRequests(listToFetch);
 
         if (!users.isEmpty() && users.at(0).getLevel() < 2) {
-            startRequests(friendsRequests);
+            requestsQueue.startRequests(friendsRequests);
         }
     } else {
         requestsQueue.cancelAll();

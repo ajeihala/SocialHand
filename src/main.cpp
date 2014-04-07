@@ -27,17 +27,17 @@ int main(int argc, char *argv[])
 
     QObject::connect(&qmlEngine, SIGNAL(quit()), QCoreApplication::instance(), SLOT(quit()));
 
-    VKAuth vkAuth;
-    VkSocialRequestFactory vkSocialRequestFactory;
+    std::shared_ptr<VKAuth> vkAuth = std::make_shared<VKAuth>();
+    std::shared_ptr<VkSocialRequestFactory> vkSocialRequestFactory = std::make_shared<VkSocialRequestFactory>(vkAuth);
 
     FriendsDb db;
 
     DefaultSearchStrategy searchStrategy;
 
-    Engine engine(&vkAuth, &vkSocialRequestFactory, &db, &searchStrategy);
+    Engine engine(vkAuth.get(), vkSocialRequestFactory.get(), &db, &searchStrategy);
 
     QQmlContext* context = qmlEngine.rootContext();
-    context->setContextProperty("vkAuth", &vkAuth);
+    context->setContextProperty("vkAuth", vkAuth.get());
     context->setContextProperty("engine", &engine);
 
 

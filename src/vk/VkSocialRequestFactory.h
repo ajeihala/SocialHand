@@ -6,7 +6,7 @@
 class VkSocialRequestFactory : public SocialRequestFactory
 {
 public:
-    VkSocialRequestFactory();
+    VkSocialRequestFactory(std::shared_ptr<AuthManager> authManager);
 
 public: // SocialRequestFactory
     virtual std::shared_ptr<SocialRequest> createGetFriendsRequest(const User& user);

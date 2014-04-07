@@ -25,9 +25,21 @@ void VKAuth::saveLoginInformation(QString userId, QString accessToken, QString e
 
 int VKAuth::getOriginatorUserId()
 {
+    int userId = getSetting(kUserId).toInt();
+    return userId;
+}
+
+QString VKAuth::getAccessToken()
+{
+    QString accessToken = getSetting(kAccessToken).toString();
+    return accessToken;
+}
+
+QVariant VKAuth::getSetting(QString key)
+{
     QSettings& settings = Settings::getInstance();
     settings.beginGroup(kVkGroup);
-    int userId = settings.value(kUserId).toInt();
+    QVariant result = settings.value(key);
     settings.endGroup();
-    return userId;
+    return result;
 }

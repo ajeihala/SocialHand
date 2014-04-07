@@ -29,7 +29,6 @@ private: // RequestsQueue::Listener
     virtual void requestFinished(SocialRequest* request);
 
 private:
-    void startRequests(const QList<std::shared_ptr<SocialRequest> >& requests);
     void processSearchIteration(UserList users);
     QList<std::shared_ptr<SocialRequest>> prepareGetFriendsRequests(const UserList& list);
     void handleFinishedRequest(SocialRequest* request);

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "engine/User.h"
+#include "engine/AuthManager.h"
 
 class QNetworkAccessManager;
 class QNetworkReply;
@@ -17,7 +18,8 @@ public:
     enum class Type
     {
         kGetUserInfo,
-        kGetFriends
+        kGetFriends,
+        kGetMutualFriends,
     };
 
 public:
@@ -25,13 +27,23 @@ public:
     void startRequest();
     void cancel();
 
+    void setAuthManager(std::shared_ptr<AuthManager> authManager);
+
 public:
-    const User& getUser() {
+    const User& getUser() const {
         return user;
     }
 
-    Type getType() {
+    int getUserId() const {
+        return getUser().getUserId();
+    }
+
+    Type getType() const {
         return type;
+    }
+
+    AuthManager* getAuthManager() {
+        return authManager.get();
     }
 
 signals:
@@ -52,6 +64,8 @@ private:
     const Type type;
     QNetworkReply* reply;
     const User user;
+
+    std::shared_ptr<AuthManager> authManager;
 };
 
 typedef QList<std::shared_ptr<SocialRequest>> RequestsList;
