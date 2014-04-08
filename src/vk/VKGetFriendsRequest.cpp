@@ -1,4 +1,4 @@
-#include "VKGetFriends.h"
+#include "VKGetFriendsRequest.h"
 
 #include <QDebug>
 #include <QJsonDocument>
@@ -10,22 +10,22 @@
 
 #include "engine/User.h"
 
-VKGetFriends::VKGetFriends(const User& user, QObject *parent) :
+VKGetFriendsRequest::VKGetFriendsRequest(const User& user, QObject *parent) :
     GetFriendsRequest(user, parent)
 {
 }
 
-const UserList& VKGetFriends::getFriendsList()
+const UserList& VKGetFriendsRequest::getFriendsList()
 {
     return userList;
 }
 
-QUrl VKGetFriends::getRequestUrl(const QString& userId)
+QUrl VKGetFriendsRequest::getRequestUrl(const QString& userId)
 {
     return QUrl(QString("https://api.vk.com/method/friends.get?user_id=%1&fields=country,city,home_town,timezone").arg(userId));
 }
 
-void VKGetFriends::processReceivedResponse(const QByteArray& response)
+void VKGetFriendsRequest::processReceivedResponse(const QByteArray& response)
 {
     QJsonDocument json = QJsonDocument::fromJson(response);
 

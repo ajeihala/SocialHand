@@ -43,7 +43,7 @@ public:
     }
 
     AuthManager* getAuthManager() {
-        return authManager.get();
+        return authManager != nullptr ? authManager.get() : nullptr;
     }
 
 signals:

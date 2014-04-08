@@ -1,15 +1,15 @@
-#ifndef VKGETFRIENDS_H
-#define VKGETFRIENDS_H
+#ifndef VKGETFRIENDSREQUEST_H
+#define VKGETFRIENDSREQUEST_H
 
 #include <QObject>
 #include "engine/GetFriendsRequest.h"
 
 
-class VKGetFriends : public GetFriendsRequest
+class VKGetFriendsRequest : public GetFriendsRequest
 {
     Q_OBJECT
 public:
-    explicit VKGetFriends(const User& user, QObject* parent = 0);
+    explicit VKGetFriendsRequest(const User& user, QObject* parent = 0);
     
 public: // GetFriendsRequest
     const UserList& getFriendsList();
@@ -23,4 +23,4 @@ private:
 
 };
 
-#endif // VKGETFRIENDS_H
+#endif // VKGETFRIENDSREQUEST_H

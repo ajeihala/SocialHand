@@ -45,7 +45,6 @@ HEADERS += \
     src/vk/VKAuth.h \
     src/utils/QmlRegisterTypes.h \
     src/utils/Settings.h \
-    src/vk/VKGetFriends.h \
     src/engine/Engine.h \
     src/engine/AuthManager.h \
     src/engine/GetFriendsRequest.h \
@@ -59,7 +58,10 @@ HEADERS += \
     src/engine/DefaultSearchStrategy.h \
     src/engine/SocialRequest.h \
     src/vk/VkGetMutualFriendsRequest.h \
-    src/engine/GetMutualFriendsRequest.h
+    src/engine/GetMutualFriendsRequest.h \
+    src/engine/GetUserInfoRequest.h \
+    src/vk/VkGetUserInfoRequest.h \
+    src/vk/VKGetFriendsRequest.h
 
 SOURCES += \
     src/main.cpp \
@@ -67,7 +69,6 @@ SOURCES += \
     src/vk/VKAuth.cpp \
     src/utils/QmlRegisterTypes.cpp \
     src/utils/Settings.cpp \
-    src/vk/VKGetFriends.cpp \
     src/engine/Engine.cpp \
     src/vk/VkSocialRequestFactory.cpp \
     src/db/FriendsDb.cpp \
@@ -75,7 +76,9 @@ SOURCES += \
     src/engine/User.cpp \
     src/engine/DefaultSearchStrategy.cpp \
     src/engine/SocialRequest.cpp \
-    src/vk/VkGetMutualFriendsRequest.cpp
+    src/vk/VkGetMutualFriendsRequest.cpp \
+    src/vk/VkGetUserInfoRequest.cpp \
+    src/vk/VKGetFriendsRequest.cpp
 
 OTHER_FILES += \
     qml/main.qml \

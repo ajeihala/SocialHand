@@ -15,6 +15,7 @@ public:
 
     virtual ~SocialRequestFactory() { }
 
+    virtual std::shared_ptr<SocialRequest> createGetUserInfoRequest(const User& user) = 0;
     virtual std::shared_ptr<SocialRequest> createGetFriendsRequest(const User& user) = 0;
 
 protected:
