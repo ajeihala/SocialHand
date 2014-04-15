@@ -61,7 +61,9 @@ HEADERS += \
     src/engine/GetMutualFriendsRequest.h \
     src/engine/GetUserInfoRequest.h \
     src/vk/VkGetUserInfoRequest.h \
-    src/vk/VKGetFriendsRequest.h
+    src/vk/VKGetFriendsRequest.h \
+    src/engine/UserInfo.h \
+    src/vk/VkHelper.h
 
 SOURCES += \
     src/main.cpp \
@@ -78,7 +80,9 @@ SOURCES += \
     src/engine/SocialRequest.cpp \
     src/vk/VkGetMutualFriendsRequest.cpp \
     src/vk/VkGetUserInfoRequest.cpp \
-    src/vk/VKGetFriendsRequest.cpp
+    src/vk/VKGetFriendsRequest.cpp \
+    src/engine/UserInfo.cpp \
+    src/vk/VkHelper.cpp
 
 OTHER_FILES += \
     qml/main.qml \

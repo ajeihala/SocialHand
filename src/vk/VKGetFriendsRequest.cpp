@@ -9,6 +9,7 @@
 #include <QVariantList>
 
 #include "engine/User.h"
+#include "vk/VkHelper.h"
 
 VKGetFriendsRequest::VKGetFriendsRequest(const User& user, QObject *parent) :
     GetFriendsRequest(user, parent)
@@ -22,7 +23,17 @@ const UserList& VKGetFriendsRequest::getFriendsList()
 
 QUrl VKGetFriendsRequest::getRequestUrl(const QString& userId)
 {
-    return QUrl(QString("https://api.vk.com/method/friends.get?user_id=%1&fields=country,city,home_town,timezone").arg(userId));
+    QStringList fieldsList;
+    fieldsList << VkFields::kCountry
+               << VkFields::kCity
+               << VkFields::kHomeTown
+               << VkFields::kTimeZone;
+
+    VkUrlBuilder builder("friends.get");
+    builder.addItem("user_id", userId)
+            .addItem("fields", fieldsList.join(','));
+
+    return builder.build();
 }
 
 void VKGetFriendsRequest::processReceivedResponse(const QByteArray& response)
@@ -45,10 +56,10 @@ void VKGetFriendsRequest::processReceivedResponse(const QByteArray& response)
 
         if (!isDeactivated) {
             QJsonValue userIdValue = object.value("user_id");
-            QJsonValue countryValue = object.value("country");
-            QJsonValue cityValue = object.value("city");
-            QJsonValue homeTown = object.value("home_town");
-            QJsonValue timeZoneValue = object.value("timezone");
+            QJsonValue countryValue = object.value(VkFields::kCountry);
+            QJsonValue cityValue = object.value(VkFields::kCity);
+            QJsonValue homeTown = object.value(VkFields::kHomeTown);
+            QJsonValue timeZoneValue = object.value(VkFields::kTimeZone);
 
             User data(userIdValue.toDouble(), getUser().getUserId(), friendsLevel, userSide);
             data.setCountry(countryValue.toString());
